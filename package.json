@@ -1,0 +1,43 @@
+{
+  "private": true,
+  "scripts": {
+    "extract": "formatjs extract 'packages/*/src/**/*.ts*' --ignore='**/*.d.ts' --out-file lang/zho.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
+    "prepare": "husky install",
+    "tms-compile": "node lang/cli.mjs compile",
+    "tms-translate": "node lang/cli.mjs translate"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.8.1",
+    "@commitlint/config-conventional": "^17.8.1",
+    "@formatjs/cli": "^6.2.4",
+    "@types/eslint": "^8.56.0",
+    "@types/node": "^20.10.5",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "babel-plugin-formatjs": "^10.5.10",
+    "cborg": "^2.0.5",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^8.10.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "husky": "^8.0.3",
+    "json-stable-stringify": "^1.1.0",
+    "lint-staged": "^13.3.0",
+    "prettier": "^2.8.8",
+    "sort-package-json": "^2.6.0",
+    "stylelint": "^15.11.0",
+    "stylelint-config-standard": "^34.0.0",
+    "ts-node": "^10.9.2",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3",
+    "xid-ts": "1.0.0"
+  },
+  "packageManager": "pnpm@8.6.12",
+  "engines": {
+    "node": ">=20"
+  }
+}

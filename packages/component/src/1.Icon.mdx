@@ -1,0 +1,12 @@
+import { Meta, IconGallery, IconItem } from '@storybook/blocks'
+import { Icon, IconNameList } from './Icon'
+
+<Meta title='Icon' />
+
+<IconGallery>
+  {IconNameList.map((name) => (
+    <IconItem name={name} key={name}>
+      <Icon name={name} style={{ color: '#745DF9' }} />
+    </IconItem>
+  ))}
+</IconGallery>

@@ -1,7 +1,6 @@
 import { css, useTheme, type CSSObject } from '@emotion/react'
 import { forwardRef, memo, type SVGAttributes } from 'react'
 import { useIntl } from 'react-intl'
-import { ReactComponent as SVG } from './logo.svg'
 
 export type BrandSize = 'medium' | 'large'
 
@@ -14,32 +13,42 @@ const SizeDict: Record<BrandSize, CSSObject> = {
   },
 }
 
-export interface BrandProps extends SVGAttributes<SVGSVGElement> {
+export interface BrandProps extends SVGAttributes<HTMLHeadingElement> {
   size?: BrandSize
 }
 
 export const Brand = memo(
   forwardRef(function Brand(
     { size = 'medium', ...props }: BrandProps,
-    ref: React.Ref<SVGSVGElement>
+    ref: React.Ref<HTMLHeadingElement>
   ) {
     const intl = useIntl()
     const theme = useTheme()
 
     return (
-      <SVG
-        role='img'
-        title={intl.formatMessage({ defaultMessage: 'NS Protocol' })}
-        {...props}
-        ref={ref}
+      <div
         css={css`
-          ${SizeDict[size]}
-          vertical-align: text-bottom;
-          color: ${theme.palette.primaryNormal};
-          fill: currentColor;
-          user-select: none;
+          color: ${theme.palette.white};
+          text-align: center;
         `}
-      />
+      >
+        <h2
+          title={intl.formatMessage({ defaultMessage: 'Namebase' })}
+          {...props}
+          ref={ref}
+          css={css`
+            ${SizeDict[size]}
+            ${theme.typography.h1}
+          `}
+        >
+          Namebase
+        </h2>
+        <p>
+          {intl.formatMessage({
+            defaultMessage: 'Inscribing Name service on Bitcoin network',
+          })}
+        </p>
+      </div>
     )
   })
 )

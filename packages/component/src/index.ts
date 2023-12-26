@@ -36,6 +36,7 @@ export { Header, type HeaderProps } from './Header'
 export { Icon, type IconName, type IconProps, type IconSize } from './Icon'
 export { Logo, type LogoProps } from './Logo'
 export { Menu, MenuItem, type MenuItemProps, type MenuProps } from './Menu'
+export { Navigation, type NavigationProps } from './Navigation'
 export { QRCode } from './QRCode'
 export {
   Select,

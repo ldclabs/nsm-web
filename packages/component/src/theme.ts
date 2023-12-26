@@ -39,6 +39,7 @@ declare module '@emotion/react' {
       white: string
       orange: string
       green: string
+      gold: string
     }
     /**
      * semantic color
@@ -153,13 +154,17 @@ declare module '@emotion/react' {
       card: string
       cardHover: string
       shadow: string
+      whiteMask: string
+      blackMask: string
+      goldMask: string
+      primaryMask: string
     }
   }
 }
 
 const palette: Theme['palette'] = {
-  primaryNormal: '#00008B',
-  primaryLight: '#2818B1',
+  primaryNormal: '#071C71',
+  primaryLight: '#0527AF',
   grayNormal1: '#2D2C52',
   grayNormal: '#1F1E40',
   grayLight: '#7C7C94',
@@ -169,6 +174,7 @@ const palette: Theme['palette'] = {
   white: '#FFFFFF',
   orange: '#DA442F',
   green: '#4BA755',
+  gold: '#FF9F40',
 }
 
 export const lightTheme: Theme = {
@@ -397,7 +403,10 @@ export const lightTheme: Theme = {
     divider: `0px 0px 3px 2px ${RGBA(palette.grayLight0, 0.75)}`,
     card: `0px 0px 3px 2px ${RGBA(palette.grayLight0, 0.75)}`,
     cardHover: `0px 0px 4px 2px ${RGBA(palette.primaryLight, 0.5)}`,
-    // TODO: wait for design
-    shadow: '0px 4px 20px rgba(31, 30, 64, 0.1)',
+    shadow: `1px 1px 2px 2px ${RGBA(palette.gold, 0.75)}`,
+    whiteMask: `${RGBA(palette.white, 0.618)}`,
+    blackMask: `${RGBA(palette.black, 0.618)}`,
+    goldMask: `${RGBA(palette.gold, 0.618)}`,
+    primaryMask: `${RGBA(palette.primaryNormal, 0.618)}`,
   },
 }

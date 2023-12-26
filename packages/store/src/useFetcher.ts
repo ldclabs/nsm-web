@@ -18,10 +18,10 @@ export interface FetcherConfig {
 }
 
 const FetcherConfigContext = createContext<FetcherConfig>({
-  PUBLIC_PATH: 'https://www.namebase.cc/',
-  API_URL: 'https://api.namebase.cc/',
-  AUTH_URL: 'https://auth.namebase.cc/',
-  WALLET_URL: 'https://wallet.namebase.cc/',
+  PUBLIC_PATH: 'http://127.0.0.1:5173/',
+  API_URL: 'http://192.168.1.80:8080/',
+  AUTH_URL: 'http://192.168.1.80:8080/',
+  WALLET_URL: 'http://192.168.1.80:8080/',
 })
 
 export const FetcherConfigProvider = FetcherConfigContext.Provider

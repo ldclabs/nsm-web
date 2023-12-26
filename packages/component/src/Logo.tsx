@@ -6,8 +6,8 @@ import { ReactComponent as SVG } from './logo.svg'
 export type LogoSize = 'small' | 'medium'
 
 const SizeDict: Record<LogoSize, number> = {
-  small: 24,
-  medium: 36,
+  small: 28,
+  medium: 42,
 }
 
 export interface LogoProps extends SVGAttributes<SVGSVGElement> {

@@ -4,6 +4,7 @@ import {
   DEFAULT_LOCALE,
   GlobalStyles,
   Header,
+  Navigation,
   lightTheme,
   type HeaderProps,
   type MenuProps,
@@ -17,7 +18,6 @@ import {
 import {
   LoggerProvider,
   LoggingLevel,
-  RGBA,
   resolveURL,
   useIsMounted,
   useLayoutEffect,
@@ -59,6 +59,8 @@ import { useLogger } from './logger'
 import Home from './pages'
 import NotFound from './pages/404'
 import LoginStatePage from './pages/login/state'
+import Name from './pages/name'
+import Wallet from './pages/wallet'
 import { BREAKPOINT } from './shared'
 
 function Fallback({
@@ -110,6 +112,7 @@ export const LayoutDivRefContext =
 function Layout() {
   const logger = useLogger()
   const intl = useIntl()
+  const theme = useTheme()
   const { dialog } = useAuth()
   const navigate = useNavigate()
 
@@ -162,21 +165,27 @@ function Layout() {
   return (
     <SetHeaderPropsContext.Provider value={setHeaderProps}>
       <main
+        id='main'
         css={css`
-          height: calc(100vh - 200px);
+          position: relative;
+          height: calc(100vh - 150px);
           max-height: 1080px;
           width: 480px;
           display: flex;
           flex-direction: column;
           overflow: hidden;
           margin: 100px auto 0;
-          border: 20px solid ${RGBA('ffffff', 0.618)};
+          border: 4px solid ${theme.effect.whiteMask};
           border-radius: 10px;
+          backdrop-filter: blur(2px);
+          box-shadow: ${theme.effect.shadow};
+          scroll-behavior: smooth;
           @media (max-width: ${BREAKPOINT.small}px) {
             border: 0;
             width: 100%;
             height: 100vh;
             margin: 0;
+            border-radius: 0;
           }
         `}
       >
@@ -184,6 +193,8 @@ function Layout() {
           userMenu={userMenu}
           {...headerProps}
           css={css`
+            position: sticky;
+            top: 0;
             animation: 0.5s ease-in-out ${keyframes`
                 from {
                   opacity: 0;
@@ -212,6 +223,19 @@ function Layout() {
             </ErrorBoundary>
           </LayoutDivRefContext.Provider>
         </div>
+        <Navigation
+          css={css`
+            position: sticky;
+            bottom: 0;
+            animation: 0.5s ease-in-out ${keyframes`
+                from {
+                  opacity: 0;
+                }
+                to {
+                  opacity: 1;
+                }`};
+          `}
+        />
       </main>
     </SetHeaderPropsContext.Provider>
   )
@@ -230,15 +254,16 @@ export function SetHeaderProps(props: HeaderProps) {
   return null
 }
 
-export const WALLET_PATH = '/wallet'
-export const INDEXER_NAME_PATH = '/indexer/:name'
-export const INDEXER_DEFAULT_PATH = '/indexer'
+export const WALLET_PATH = '/page/wallet'
+export const NAME_PATH = '/page/name'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<Layout />}>
       <Route path='*' element={<NotFound />} />
       <Route path='/' element={<Home />} />
+      <Route path={NAME_PATH} element={<Name />} />
+      <Route path={WALLET_PATH} element={<Wallet />} />
       <Route path='/login/state' element={<LoginStatePage />} />
     </Route>
   ),

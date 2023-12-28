@@ -163,8 +163,8 @@ declare module '@emotion/react' {
 }
 
 const palette: Theme['palette'] = {
-  primaryNormal: '#071C71',
-  primaryLight: '#0527AF',
+  primaryNormal: '#002FA7',
+  primaryLight: '#123ABC',
   grayNormal1: '#2D2C52',
   grayNormal: '#1F1E40',
   grayLight: '#7C7C94',

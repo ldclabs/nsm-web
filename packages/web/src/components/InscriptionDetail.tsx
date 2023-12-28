@@ -18,6 +18,7 @@ export default function InscriptionDetail({
         display: flex;
         flex-direction: column;
         width: 100%;
+        height: fit-content;
         flex: 1;
         gap: 8px;
         min-width: 0; // for flexbox to work
@@ -64,37 +65,35 @@ export default function InscriptionDetail({
     >
       <legend
         css={css`
-          ${theme.typography.h1}
+          ${theme.typography.h2}
           color: ${theme.palette.primaryNormal};
-          padding-bottom: 8px;
         `}
       >
-        <Link
-          unstable_viewTransition={true}
-          to={`/indexer/name?name=${inscription.name}`}
-        >
+        <Link to={`/indexer/name?name=${inscription.name}`}>
           {inscription.name}
         </Link>
       </legend>
       <div>
-        <label>{intl.formatMessage({ defaultMessage: 'Name sequence' })}</label>
+        <label>
+          {intl.formatMessage({ defaultMessage: 'Name sequence:' })}
+        </label>
         <p>{inscription.sequence}</p>
       </div>
       <div>
         <label>
-          {intl.formatMessage({ defaultMessage: 'Inscription height' })}
+          {intl.formatMessage({ defaultMessage: 'Inscription height:' })}
         </label>
         <p>{inscription.height}</p>
       </div>
       <div>
         <label>
-          {intl.formatMessage({ defaultMessage: 'Inscribed block height' })}
+          {intl.formatMessage({ defaultMessage: 'Inscribed block height:' })}
         </label>
         <p>{inscription.block_height}</p>
       </div>
       <div>
         <label>
-          {intl.formatMessage({ defaultMessage: 'Inscribed block hash' })}
+          {intl.formatMessage({ defaultMessage: 'Inscribed block hash:' })}
         </label>
         <p>
           <a
@@ -108,7 +107,7 @@ export default function InscriptionDetail({
       </div>
       <div>
         <label>
-          {intl.formatMessage({ defaultMessage: 'Inscribed txid' })}
+          {intl.formatMessage({ defaultMessage: 'Inscribed txid:' })}
         </label>
         <p>
           <a
@@ -123,26 +122,26 @@ export default function InscriptionDetail({
       <div>
         <label>
           {intl.formatMessage({
-            defaultMessage: 'Previous inscription hash',
+            defaultMessage: 'Previous inscription hash:',
           })}
         </label>
         <p>{BytesToHex(inscription.previous_hash)}</p>
       </div>
       <div>
         <label>
-          {intl.formatMessage({ defaultMessage: 'Name state hash' })}
+          {intl.formatMessage({ defaultMessage: 'Name state hash:' })}
         </label>
         <p>{BytesToHex(inscription.name_hash)}</p>
       </div>
       <div>
         <label>
-          {intl.formatMessage({ defaultMessage: 'Service state hash' })}
+          {intl.formatMessage({ defaultMessage: 'Service state hash:' })}
         </label>
         <p>{BytesToHex(inscription.service_hash)}</p>
       </div>
       <div>
         <label>
-          {intl.formatMessage({ defaultMessage: 'Name diagnostic' })}
+          {intl.formatMessage({ defaultMessage: 'Name diagnostic:' })}
         </label>
         <textarea readOnly={true} className='scroll-x scroll-y'>
           {diagName(inscription.data)}

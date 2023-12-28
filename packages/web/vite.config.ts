@@ -52,8 +52,8 @@ export default defineConfig({
         'short_name': 'NS',
         'start_url': scope,
         'display': 'standalone',
-        'theme_color': '#ffffff',
-        'background_color': '#ffffff',
+        'theme_color': '#FF9F40',
+        'background_color': '#002FA7',
         'description':
           'NS.Top — Inscribing Name service on Bitcoin network (Implementation of NS-Protocol).',
         'icons': [

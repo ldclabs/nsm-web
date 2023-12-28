@@ -25,6 +25,7 @@ export default function NameDetail({
         display: flex;
         flex-direction: column;
         width: 100%;
+        height: fit-content;
         flex: 1;
         gap: 8px;
         min-width: 0; // for flexbox to work
@@ -52,7 +53,7 @@ export default function NameDetail({
         }
         textarea {
           width: calc(100% - 16px);
-          min-height: 180px;
+          min-height: 100px;
           resize: none;
           margin-top: 4px;
           padding: 4px 8px;
@@ -71,50 +72,50 @@ export default function NameDetail({
     >
       <legend
         css={css`
-          ${theme.typography.h1}
+          ${theme.typography.h2}
           color: ${theme.palette.primaryNormal};
-          padding-bottom: 8px;
         `}
       >
         <Link
-          unstable_viewTransition={true}
           to={`/indexer/inscription?name=${nameState.name}&sequence=${nameState.sequence}`}
         >
           {nameState.name}
         </Link>
       </legend>
       <div>
-        <label>{intl.formatMessage({ defaultMessage: 'Name sequence' })}</label>
+        <label>
+          {intl.formatMessage({ defaultMessage: 'Name sequence:' })}
+        </label>
         <p>{nameState.sequence}</p>
       </div>
       <div>
         <label>
-          {intl.formatMessage({ defaultMessage: 'Inscribed block height' })}
+          {intl.formatMessage({ defaultMessage: 'Inscribed block height:' })}
         </label>
         <p>{nameState.block_height}</p>
       </div>
       <div>
         <label>
-          {intl.formatMessage({ defaultMessage: 'Inscribed block time' })}
+          {intl.formatMessage({ defaultMessage: 'Inscribed block time:' })}
         </label>
         <p>{new Date(nameState.block_time * 1000).toLocaleString()}</p>
       </div>
       <div>
         <label>
-          {intl.formatMessage({ defaultMessage: 'Name stale time' })}
+          {intl.formatMessage({ defaultMessage: 'Name stale time:' })}
         </label>
         <p>{new Date(nameState.stale_time * 1000).toLocaleString()}</p>
       </div>
       <div>
         <label>
-          {intl.formatMessage({ defaultMessage: 'Name expire time' })}
+          {intl.formatMessage({ defaultMessage: 'Name expire time:' })}
         </label>
         <p>{new Date(nameState.expire_time * 1000).toLocaleString()}</p>
       </div>
       <div>
         <label>
           {intl.formatMessage({
-            defaultMessage: 'Public keys',
+            defaultMessage: 'Public keys:',
           })}
         </label>
         {nameState.public_keys.map((key, i) => (
@@ -123,7 +124,7 @@ export default function NameDetail({
       </div>
       <div>
         <label>
-          {intl.formatMessage({ defaultMessage: 'Signature threshold' })}
+          {intl.formatMessage({ defaultMessage: 'Signature threshold:' })}
         </label>
         <p>{nameState.threshold}</p>
       </div>
@@ -131,7 +132,7 @@ export default function NameDetail({
         <div>
           <label>
             {intl.formatMessage({
-              defaultMessage: 'Next Public keys',
+              defaultMessage: 'Next Public keys:',
             })}
           </label>
           {nameState.next_public_keys.map((key, i) => (
@@ -142,7 +143,7 @@ export default function NameDetail({
       {servicesState.length > 0 && (
         <div>
           <label>
-            {intl.formatMessage({ defaultMessage: 'Services diagnostic' })}
+            {intl.formatMessage({ defaultMessage: 'Services diagnostic:' })}
           </label>
           <textarea readOnly={true} className='scroll-x scroll-y'>
             {diagServices(servicesState)}

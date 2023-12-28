@@ -11,7 +11,7 @@ type Story = StoryObj<typeof QRCode>
 
 export const Basic: Story = {
   args: {
-    value: 'https://www.namebase.cc/',
+    value: 'https://www.ns.top/',
     style: { width: 256 },
   },
 }

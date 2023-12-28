@@ -21,7 +21,9 @@ export default function Placeholder(
       `}
     >
       <img aria-labelledby={id} src={src} width={100} />
-      <span id={id}>{intl.formatMessage({ defaultMessage: '暂无内容' })}</span>
+      <span id={id}>
+        {intl.formatMessage({ defaultMessage: 'No content' })}
+      </span>
     </div>
   )
 }

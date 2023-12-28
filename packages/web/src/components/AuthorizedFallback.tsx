@@ -34,7 +34,9 @@ export default function AuthorizedFallback({
         `}
       >
         {description ||
-          intl.formatMessage({ defaultMessage: '请登录后再操作' })}
+          intl.formatMessage({
+            defaultMessage: 'Please sign in and try again',
+          })}
       </span>
       <div
         css={css`
@@ -49,7 +51,7 @@ export default function AuthorizedFallback({
           size='large'
           onClick={showAuthDialog}
         >
-          {intl.formatMessage({ defaultMessage: '登录' })}
+          {intl.formatMessage({ defaultMessage: 'Sign in' })}
         </Button>
         <Link
           to='/'
@@ -58,7 +60,7 @@ export default function AuthorizedFallback({
           `}
         >
           <Button color='secondary' variant='outlined' size='large'>
-            {intl.formatMessage({ defaultMessage: '返回首页' })}
+            {intl.formatMessage({ defaultMessage: 'Back to home page' })}
           </Button>
         </Link>
       </div>

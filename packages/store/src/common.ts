@@ -17,6 +17,8 @@ export interface UserInfo {
   picture: string
 }
 
+export type NameElement = string | number | Uint8Array | Array<NameElement>
+
 export function isInWechat() {
   return window.navigator.userAgent.toLowerCase().includes('micromessenger/')
 }

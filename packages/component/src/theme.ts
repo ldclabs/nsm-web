@@ -402,11 +402,11 @@ export const lightTheme: Theme = {
   effect: {
     divider: `0px 0px 3px 2px ${RGBA(palette.grayLight0, 0.75)}`,
     card: `0px 0px 3px 2px ${RGBA(palette.grayLight0, 0.75)}`,
-    cardHover: `0px 0px 4px 2px ${RGBA(palette.primaryLight, 0.5)}`,
+    cardHover: `0px 0px 4px 2px ${RGBA(palette.gold, 0.5)}`,
     shadow: `1px 1px 2px 2px ${RGBA(palette.gold, 0.75)}`,
-    whiteMask: `${RGBA(palette.white, 0.618)}`,
-    blackMask: `${RGBA(palette.black, 0.618)}`,
-    goldMask: `${RGBA(palette.gold, 0.618)}`,
-    primaryMask: `${RGBA(palette.primaryNormal, 0.618)}`,
+    whiteMask: `${RGBA(palette.white, 0.75)}`,
+    blackMask: `${RGBA(palette.black, 0.75)}`,
+    goldMask: `${RGBA(palette.gold, 0.75)}`,
+    primaryMask: `${RGBA(palette.primaryNormal, 0.75)}`,
   },
 }

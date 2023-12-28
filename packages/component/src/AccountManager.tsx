@@ -11,7 +11,6 @@ import {
   AlertDialogHead,
 } from './AlertDialog'
 import { Avatar } from './Avatar'
-import { Brand } from './Brand'
 import { Button } from './Button'
 import { Menu, type MenuProps } from './Menu'
 import { Spinner } from './Spinner'
@@ -24,7 +23,7 @@ export const AccountManager = memo(function AccountManager({
   const { user, dialog, authorize, authorizingProvider, logout } = useAuth()
   const items = useMemo(() => {
     return (_items || []).concat({
-      label: intl.formatMessage({ defaultMessage: '退出登录' }),
+      label: intl.formatMessage({ defaultMessage: 'Sign Out' }),
       danger: true,
       onClick: logout,
     })
@@ -48,15 +47,12 @@ export const AccountManager = memo(function AccountManager({
       onPointerUpCapture={stopPropagation}
       anchor={(props) => (
         <Button color='primary' {...props}>
-          {intl.formatMessage({ defaultMessage: '登录' })}
+          {intl.formatMessage({ defaultMessage: 'Sign In' })}
         </Button>
       )}
     >
       <AlertDialogHead>
-        <FormattedMessage
-          defaultMessage='登录到 {brand}'
-          values={{ brand: <Brand /> }}
-        />
+        <FormattedMessage defaultMessage='Sign In' />
       </AlertDialogHead>
       <AlertDialogBody
         css={css`
@@ -66,26 +62,10 @@ export const AccountManager = memo(function AccountManager({
         `}
       >
         <ProviderItem
-          provider={'wechat'}
-          providerLogo={'wechat'}
-          providerName={intl.formatMessage({ defaultMessage: '微信' })}
-          isAuthorizing={authorizingProvider === 'wechat'}
-          disabled={!!authorizingProvider}
-          onAuthorize={authorize}
-        />
-        <ProviderItem
           provider={'github'}
           providerLogo={'github'}
           providerName={intl.formatMessage({ defaultMessage: 'GitHub' })}
           isAuthorizing={authorizingProvider === 'github'}
-          disabled={!!authorizingProvider}
-          onAuthorize={authorize}
-        />
-        <ProviderItem
-          provider={'google'}
-          providerLogo={'google'}
-          providerName={intl.formatMessage({ defaultMessage: 'Google' })}
-          isAuthorizing={authorizingProvider === 'google'}
           disabled={!!authorizingProvider}
           onAuthorize={authorize}
         />
@@ -155,7 +135,7 @@ function ProviderItem({
       </div>
       <span>
         {intl.formatMessage(
-          { defaultMessage: '使用 {provider} 登录' },
+          { defaultMessage: 'By {provider}' },
           { provider: providerName }
         )}
       </span>

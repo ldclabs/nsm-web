@@ -1,10 +1,7 @@
-import { ReactComponent as SvgKnowledgeGraph } from '#/assets/knowledge-graph.svg'
 import { css, useTheme } from '@emotion/react'
-import { Button } from '@ldclabs/component'
 import { RequestError, toMessage } from '@ldclabs/store'
 import { useMemo, type HTMLAttributes } from 'react'
 import { useIntl } from 'react-intl'
-import { Link } from 'react-router-dom'
 
 export default function ErrorPlaceholder({
   error,
@@ -26,20 +23,14 @@ export default function ErrorPlaceholder({
       case 403:
         return [
           intl.formatMessage({
-            defaultMessage: '访问的内容暂时无法查看，请稍后再试',
+            defaultMessage: 'Forbidden',
           }),
           undefined,
         ]
       case 404:
-        return [
-          intl.formatMessage({ defaultMessage: '访问的内容不存在' }),
-          undefined,
-        ]
+        return [intl.formatMessage({ defaultMessage: 'Not found' }), undefined]
       default:
-        return [
-          intl.formatMessage({ defaultMessage: '发生错误，请稍后再试' }),
-          message,
-        ]
+        return [intl.formatMessage({ defaultMessage: 'Bad request' }), message]
     }
   }, [intl, message, status])
 
@@ -50,13 +41,16 @@ export default function ErrorPlaceholder({
         display: flex;
         flex-direction: column;
         text-align: center;
+        margin: 16px;
+        border-radius: 8px;
+        background-color: ${theme.effect.whiteMask};
       `}
     >
-      <SvgKnowledgeGraph role='img' aria-hidden={true} />
       <div
         css={css`
-          margin-top: 24px;
-          ${theme.typography.h1}
+          margin-top: 16px;
+          color: ${theme.palette.orange};
+          ${theme.typography.bodyBold}
         `}
       >
         {title}
@@ -64,8 +58,6 @@ export default function ErrorPlaceholder({
       {description && (
         <pre
           css={css`
-            margin-top: 20px;
-            color: ${theme.color.body.secondary};
             white-space: pre-wrap;
             word-break: break-all;
           `}
@@ -73,16 +65,6 @@ export default function ErrorPlaceholder({
           <code>{description}</code>
         </pre>
       )}
-      <Link
-        to='/'
-        css={css`
-          margin-top: 32px;
-        `}
-      >
-        <Button color='primary'>
-          {intl.formatMessage({ defaultMessage: '返回首页' })}
-        </Button>
-      </Link>
     </div>
   )
 }

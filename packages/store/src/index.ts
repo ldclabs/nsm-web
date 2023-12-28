@@ -35,6 +35,7 @@ export {
 } from './useFetcher'
 
 export {
+  diagName,
   useBestInscriptions,
   useInscription,
   useInscriptionAPI,
@@ -45,3 +46,16 @@ export {
   type InvalidInscription,
   type QueryInscription,
 } from './useInscription'
+
+export {
+  NameValidating,
+  diagServices,
+  useNameServicesState,
+  useNameState,
+  useNameStateAPI,
+  useNamesByPubkey,
+  useNamesByQuery,
+  useServiceStateAPI,
+  type NameState,
+  type ServiceState,
+} from './useName'

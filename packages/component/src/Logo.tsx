@@ -1,13 +1,13 @@
 import { css, useTheme } from '@emotion/react'
 import { forwardRef, memo, type SVGAttributes } from 'react'
 import { useIntl } from 'react-intl'
-import { ReactComponent as SVG } from './logo.svg'
+import { ReactComponent as SVG } from './icon/logo.svg'
 
 export type LogoSize = 'small' | 'medium'
 
 const SizeDict: Record<LogoSize, number> = {
-  small: 28,
-  medium: 42,
+  small: 24,
+  medium: 36,
 }
 
 export interface LogoProps extends SVGAttributes<SVGSVGElement> {

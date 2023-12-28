@@ -32,7 +32,7 @@ cleanupOutdatedCaches()
 googleAnalytics()
 
 registerRoute(
-  new RegExp('https://cdn\\.namebase\\.cc/.*'),
+  new RegExp('https://cdn\\.ns\\.top/.*'),
   new CacheFirst({
     cacheName: 'cdn-res',
     plugins: [
@@ -44,7 +44,7 @@ registerRoute(
   })
 )
 
-const wwwCapture = 'https://www\\.namebase\\.cc.*'
+const wwwCapture = 'https://www\\.ns\\.top.*'
 
 registerRoute(
   new RegExp(wwwCapture),
@@ -64,7 +64,7 @@ registerRoute(
   })
 )
 
-const apiCapture = 'https://(api|wallet|auth)\\.namebase\\.cc/.*'
+const apiCapture = 'https://(api|wallet|auth)\\.ns\\.top/.*'
 
 registerRoute(
   new RegExp(apiCapture),

@@ -57,12 +57,11 @@ export const Dialog = memo(
               css={css`
                 position: fixed;
                 inset: 0;
-                width: 800px;
-                height: 620px;
-                max-width: calc(100% - 80px * 2);
-                max-height: calc(100% - 80px * 2);
+                width: 100%;
+                max-width: 600px;
+                max-height: 1080px;
                 margin: auto;
-                background: ${theme.color.dialog.background};
+                background: ${theme.palette.grayLight0};
                 border-radius: 16px;
                 border: none;
                 display: flex;
@@ -90,7 +89,7 @@ export const DialogHead = memo(function DialogHead(
       {...props}
       css={css`
         ${theme.typography.bodyBold}
-        padding: 24px;
+        padding: 16px 16px 8px;
         text-align: center;
       `}
     />
@@ -108,8 +107,9 @@ export const DialogBody = memo(
         data-dialog-body={true}
         {...props}
         css={css`
+          display: flex;
           flex: 1;
-          padding: 0 36px 24px;
+          padding: 0 16px 24px;
           overflow-y: auto;
         `}
       />
@@ -125,7 +125,7 @@ export const DialogFoot = memo(function DialogFoot(
       data-dialog-foot={true}
       {...props}
       css={css`
-        padding: 24px;
+        padding: 16px;
         text-align: center;
       `}
     />
@@ -165,7 +165,7 @@ export const DialogClose = memo(function DialogClose({
 
   return (
     <IconButton
-      aria-label={intl.formatMessage({ defaultMessage: '关闭' })}
+      aria-label={intl.formatMessage({ defaultMessage: 'Close' })}
       data-dialog-close={true}
       iconName={iconName}
       size='medium'

@@ -31,8 +31,8 @@ const SizeDict: Record<TextFieldSize, CSSObject> = {
 export interface TextFieldProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   size?: TextFieldSize | undefined
-  before?: string | JSX.Element | (() => JSX.Element | null)
-  after?: string | JSX.Element | (() => JSX.Element | null)
+  before?: string | JSX.Element | (() => JSX.Element | null) | null
+  after?: string | JSX.Element | (() => JSX.Element | null) | null
   inputtype?: string
   onEnter?: (value: string, ev: React.KeyboardEvent<HTMLInputElement>) => void
   onDismiss?: (ev: React.KeyboardEvent<HTMLInputElement>) => void

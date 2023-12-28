@@ -1,7 +1,7 @@
 import { css, useTheme } from '@emotion/react'
+import { type MenuProps } from '@ldclabs/component'
 import { forwardRef, memo, type HTMLAttributes } from 'react'
 import { NavLink } from 'react-router-dom'
-import { type MenuProps } from './Menu'
 
 export interface NavigationProps extends HTMLAttributes<HTMLElement> {
   brand?: boolean
@@ -25,45 +25,34 @@ export const Navigation = memo(
           display: flex;
           align-items: center;
           justify-content: space-around;
-          color: ${theme.palette.grayNormal};
-          background-color: ${theme.effect.whiteMask};
+          color: ${theme.palette.grayLight0};
+          background-color: ${theme.effect.blackMask};
+          box-shadow: ${theme.effect.card};
+          a {
+            width: 32%;
+            text-align: center;
+          }
         `}
       >
         <NavLink
-          to='/'
+          to='/indexer'
           style={({ isActive, isPending, isTransitioning }) => {
             return {
-              color: isActive
-                ? theme.palette.grayLight1
-                : theme.palette.grayNormal,
+              color: isActive ? theme.palette.gold : theme.palette.grayLight0,
             }
           }}
         >
-          Inscriptions
+          Indexer
         </NavLink>
         <NavLink
-          to='/page/name'
+          to='/help/about'
           style={({ isActive, isPending, isTransitioning }) => {
             return {
-              color: isActive
-                ? theme.palette.grayLight1
-                : theme.palette.grayNormal,
+              color: isActive ? theme.palette.gold : theme.palette.grayLight0,
             }
           }}
         >
-          Names
-        </NavLink>
-        <NavLink
-          to='/page/wallet'
-          style={({ isActive, isPending, isTransitioning }) => {
-            return {
-              color: isActive
-                ? theme.palette.grayLight1
-                : theme.palette.grayNormal,
-            }
-          }}
-        >
-          Wallet
+          About
         </NavLink>
       </footer>
     )

@@ -1,7 +1,6 @@
 import { css, useTheme } from '@emotion/react'
 import { forwardRef, memo, useCallback, type HTMLAttributes } from 'react'
 import { Link } from 'react-router-dom'
-import { AccountManager } from './AccountManager'
 import { Logo } from './Logo'
 import { type MenuProps } from './Menu'
 
@@ -35,7 +34,9 @@ export const Header = memo(
           display: flex;
           align-items: center;
           justify-content: space-between;
-          background-color: ${theme.effect.whiteMask};
+          color: ${theme.palette.grayLight0};
+          background-color: ${theme.effect.blackMask};
+          box-shadow: ${theme.effect.card};
         `}
       >
         <Link
@@ -50,7 +51,6 @@ export const Header = memo(
           <Logo role='heading' aria-level={1} />
         </Link>
         {props.children}
-        <AccountManager {...userMenu} />
       </header>
     )
   })

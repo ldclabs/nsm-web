@@ -18,7 +18,7 @@ const SizeDict: Record<ButtonSize, (theme: Theme) => Readonly<CSSObject>> = {
     lineHeight: theme.typography.tooltip.lineHeight,
   }),
   medium: () => ({
-    minHeight: 32,
+    minHeight: 28,
     paddingLeft: 16,
     paddingRight: 16,
     gap: 8,

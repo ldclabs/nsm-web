@@ -26,13 +26,18 @@ export function LoadMore({
       onClick={onLoadMore}
       css={css`
         border: none;
+        color: ${theme.palette.grayLight1};
         box-shadow: ${theme.effect.card};
+        border-color: ${theme.effect.whiteMask};
+        background-color: transparent;
         :hover {
-          box-shadow: ${theme.effect.shadow};
+          color: ${theme.palette.grayLight1};
+          box-shadow: ${theme.effect.cardHover};
+          background-color: transparent;
         }
       `}
     >
-      {intl.formatMessage({ defaultMessage: '加载更多' })}
+      {intl.formatMessage({ defaultMessage: 'Load more' })}
     </Button>
   ) : null
 
@@ -45,6 +50,8 @@ export function LoadMore({
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        border-color: ${theme.effect.whiteMask};
+        background-color: transparent;
       `}
     >
       {content}

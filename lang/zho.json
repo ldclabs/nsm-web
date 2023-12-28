@@ -1,0 +1,146 @@
+{
+  "/oiNtZ": {
+    "defaultMessage": "{n} inscribed names:"
+  },
+  "00LcfG": {
+    "defaultMessage": "Load more"
+  },
+  "0YAxhZ": {
+    "defaultMessage": "available"
+  },
+  "1HILJZ": {
+    "defaultMessage": "New inscriptions"
+  },
+  "2vbM7O": {
+    "defaultMessage": "Inscribed txid"
+  },
+  "3ssHsG": {
+    "defaultMessage": "Please sign in and try again"
+  },
+  "4lluzm": {
+    "defaultMessage": "{n} names inscribed"
+  },
+  "6GjfL2": {
+    "defaultMessage": "NS.Top (https://www.ns.top) is a implementation of NS-Protocol."
+  },
+  "7B9GNU": {
+    "defaultMessage": "invalid"
+  },
+  "9WAllR": {
+    "defaultMessage": "Name diagnostic"
+  },
+  "E74ahT": {
+    "defaultMessage": "Name state hash"
+  },
+  "F62y+K": {
+    "defaultMessage": "Sign Out"
+  },
+  "Fs9Uq6": {
+    "defaultMessage": "Inscription height"
+  },
+  "ItSJS1": {
+    "defaultMessage": "Name expire time"
+  },
+  "Lf9G+H": {
+    "defaultMessage": "Inscription"
+  },
+  "Oehcdy": {
+    "defaultMessage": "inscribed"
+  },
+  "PxbJxf": {
+    "defaultMessage": "Public keys"
+  },
+  "Q2ZjVn": {
+    "defaultMessage": "Next Public keys"
+  },
+  "QtgWs1": {
+    "defaultMessage": "My Names"
+  },
+  "RTrv/N": {
+    "defaultMessage": "Previous inscription hash"
+  },
+  "RbbRz+": {
+    "defaultMessage": "Service state hash"
+  },
+  "SQJto2": {
+    "defaultMessage": "Sign in"
+  },
+  "SuGtxK": {
+    "defaultMessage": "No content"
+  },
+  "TThIOM": {
+    "defaultMessage": "Not found"
+  },
+  "TvyzNM": {
+    "defaultMessage": "NS Protocol"
+  },
+  "U9N/zD": {
+    "defaultMessage": "Bad request"
+  },
+  "Ub+AGc": {
+    "defaultMessage": "Sign In"
+  },
+  "VLK0WW": {
+    "defaultMessage": "Forbidden"
+  },
+  "WsAB5l": {
+    "defaultMessage": "Name stale time"
+  },
+  "XMYlZD": {
+    "defaultMessage": "My Wallet"
+  },
+  "Xvo/7M": {
+    "defaultMessage": "Back to home page"
+  },
+  "aoWE20": {
+    "defaultMessage": "Please try again later"
+  },
+  "c1TSHV": {
+    "defaultMessage": "Inscribed block time"
+  },
+  "dl0VIe": {
+    "defaultMessage": "Inscribed block height"
+  },
+  "dw+SS6": {
+    "defaultMessage": "{n} inscriptions is coming"
+  },
+  "eZG9X1": {
+    "defaultMessage": "ns.top"
+  },
+  "huJya7": {
+    "defaultMessage": "Services diagnostic"
+  },
+  "j3JUoq": {
+    "defaultMessage": "Signature threshold"
+  },
+  "lPtDdx": {
+    "defaultMessage": "Inscribing Name service on Bitcoin network"
+  },
+  "o9jxmo": {
+    "defaultMessage": "By {provider}"
+  },
+  "qFH4Mi": {
+    "defaultMessage": "Name sequence"
+  },
+  "rELDbB": {
+    "defaultMessage": "Refresh"
+  },
+  "rbrahO": {
+    "defaultMessage": "Close"
+  },
+  "ufBAPE": {
+    "defaultMessage": "Inscribed block hash"
+  },
+  "vt5zEV": {
+    "defaultMessage": "There was an error. Please try again later"
+  },
+  "vuAWR8": {
+    "defaultMessage": "Name State"
+  },
+  "wO9wb5": {
+    "defaultMessage": "GitHub"
+  },
+  "xW4JN6": {
+    "defaultMessage": "Logged in successfully, please close this page"
+  }
+}

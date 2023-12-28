@@ -33,7 +33,7 @@ export const Brand = memo(
         `}
       >
         <h2
-          title={intl.formatMessage({ defaultMessage: 'Namebase' })}
+          title={intl.formatMessage({ defaultMessage: 'ns.top' })}
           {...props}
           ref={ref}
           css={css`
@@ -41,7 +41,17 @@ export const Brand = memo(
             ${theme.typography.h1}
           `}
         >
-          Namebase
+          NS.Top
+          <span
+            css={css`
+              margin-left: 8px;
+              ${theme.typography.tooltip}
+              color: ${theme.palette.gold};
+              text-align: center;
+            `}
+          >
+            by NS-Protocol
+          </span>
         </h2>
         <p>
           {intl.formatMessage({

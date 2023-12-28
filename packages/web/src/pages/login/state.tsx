@@ -28,10 +28,10 @@ export default function LoginStatePage() {
       >
         {status === 200
           ? intl.formatMessage({
-              defaultMessage: '已登录成功，请关闭此页面',
+              defaultMessage: 'Logged in successfully, please close this page',
             })
           : intl.formatMessage({
-              defaultMessage: '请稍后重试',
+              defaultMessage: 'Please try again later',
             })}
       </div>
     </div>

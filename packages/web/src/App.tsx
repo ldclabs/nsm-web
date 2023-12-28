@@ -1,10 +1,9 @@
-import { ThemeProvider, css, keyframes, useTheme } from '@emotion/react'
+import { Global, ThemeProvider, css, keyframes, useTheme } from '@emotion/react'
 import {
   Button,
   DEFAULT_LOCALE,
   GlobalStyles,
   Header,
-  Navigation,
   lightTheme,
   type HeaderProps,
   type MenuProps,
@@ -54,12 +53,15 @@ import {
   useNavigate,
 } from 'react-router-dom'
 import { SWRConfig, type SWRConfiguration } from 'swr'
+import { Navigation } from './Navigation'
 import Loading from './components/Loading'
 import { useLogger } from './logger'
-import Home from './pages'
-import NotFound from './pages/404'
+import AboutPage from './pages/about'
+import Home from './pages/indexer'
+import InscriptionPage from './pages/indexer/inscription'
+import NameStatePage from './pages/indexer/name'
 import LoginStatePage from './pages/login/state'
-import Name from './pages/name'
+import Market from './pages/market'
 import Wallet from './pages/wallet'
 import { BREAKPOINT } from './shared'
 
@@ -87,7 +89,11 @@ function Fallback({
         }
       `}
     >
-      <h1>{intl.formatMessage({ defaultMessage: '出错了，请稍后再试' })}</h1>
+      <h1>
+        {intl.formatMessage({
+          defaultMessage: 'There was an error. Please try again later',
+        })}
+      </h1>
       <pre
         css={css`
           margin: 40px 0;
@@ -100,7 +106,7 @@ function Fallback({
         <code>{props.error.message}</code>
       </pre>
       <Button color='secondary' onClick={onRefresh}>
-        {intl.formatMessage({ defaultMessage: '刷新' })}
+        {intl.formatMessage({ defaultMessage: 'Refresh' })}
       </Button>
     </div>
   )
@@ -164,25 +170,61 @@ function Layout() {
 
   return (
     <SetHeaderPropsContext.Provider value={setHeaderProps}>
+      <Global
+        styles={css`
+          .scroll-x {
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            @media (min-width: ${BREAKPOINT.small}px) {
+              ::-webkit-scrollbar {
+                background-color: ${theme.effect.blackMask};
+                height: 8px;
+              }
+              ::-webkit-scrollbar-track {
+                margin: 0 8px;
+              }
+              ::-webkit-scrollbar-thumb {
+                border-radius: 4px;
+                background-color: ${theme.effect.whiteMask};
+              }
+            }
+          }
+          .scroll-y {
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            @media (min-width: ${BREAKPOINT.small}px) {
+              ::-webkit-scrollbar {
+                background-color: ${theme.effect.blackMask};
+                width: 8px;
+              }
+              ::-webkit-scrollbar-track {
+                margin: 8px 0;
+              }
+              ::-webkit-scrollbar-thumb {
+                border-radius: 4px;
+                background-color: ${theme.effect.whiteMask};
+              }
+            }
+          }
+        `}
+      />
       <main
         id='main'
         css={css`
           position: relative;
           height: calc(100vh - 150px);
           max-height: 1080px;
-          width: 480px;
+          max-width: 600px;
+          width: 100%;
           display: flex;
           flex-direction: column;
           overflow: hidden;
           margin: 100px auto 0;
-          border: 4px solid ${theme.effect.whiteMask};
-          border-radius: 10px;
+          border: 2px solid ${theme.effect.whiteMask};
+          border-radius: 16px;
           backdrop-filter: blur(2px);
-          box-shadow: ${theme.effect.shadow};
-          scroll-behavior: smooth;
           @media (max-width: ${BREAKPOINT.small}px) {
             border: 0;
-            width: 100%;
             height: 100vh;
             margin: 0;
             border-radius: 0;
@@ -206,11 +248,11 @@ function Layout() {
         />
         <div
           ref={layoutDivRef}
+          className='scroll-y'
           css={css`
             flex: 1;
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
           `}
         >
           <LayoutDivRefContext.Provider value={layoutDivRef}>
@@ -254,16 +296,20 @@ export function SetHeaderProps(props: HeaderProps) {
   return null
 }
 
-export const WALLET_PATH = '/page/wallet'
-export const NAME_PATH = '/page/name'
+export const WALLET_PATH = '/wallet'
+export const MARKET_PATH = '/market'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<Layout />}>
-      <Route path='*' element={<NotFound />} />
-      <Route path='/' element={<Home />} />
-      <Route path={NAME_PATH} element={<Name />} />
+      <Route path='*' element={<RedirectHome />} />
+      <Route path='/indexer' element={<Home />}>
+        <Route path='inscription' element={<InscriptionPage />} />
+        <Route path='name' element={<NameStatePage />} />
+      </Route>
+      <Route path={MARKET_PATH} element={<Market />} />
       <Route path={WALLET_PATH} element={<Wallet />} />
+      <Route path='/help/about' element={<AboutPage />} />
       <Route path='/login/state' element={<LoginStatePage />} />
     </Route>
   ),
@@ -438,4 +484,14 @@ function LoggingUnhandledError() {
 async function loadLanguages(locale: string) {
   const res = await import(`../lang/${locale}.json`)
   return res.messages
+}
+
+function RedirectHome() {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    navigate('/indexer')
+  }, [navigate])
+
+  return null
 }

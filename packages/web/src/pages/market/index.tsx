@@ -2,7 +2,7 @@ import { SetHeaderProps } from '#/App'
 import { css } from '@emotion/react'
 import { useToast } from '@ldclabs/component'
 
-export default function Name() {
+export default function Market() {
   const { renderToastContainer } = useToast()
 
   return (
@@ -19,7 +19,7 @@ export default function Name() {
             gap: 16px;
           `}
         >
-          Names
+          Market
         </div>
       </SetHeaderProps>
       <div
@@ -35,7 +35,7 @@ export default function Name() {
           border-radius: 30px;
         `}
       >
-        Names
+        Market
       </div>
     </>
   )

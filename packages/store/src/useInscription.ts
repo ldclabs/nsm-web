@@ -1,7 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import useSWR from 'swr'
 import useSWRInfinite from 'swr/infinite'
 import useSWRSubscription from 'swr/subscription'
+import { encode } from './CBOR'
+import { BytesToHex, type NameElement } from './common'
 import { useFetcher } from './useFetcher'
 
 export interface QueryInscription {
@@ -22,7 +24,7 @@ export interface Inscription {
   block_hash: Uint8Array
   txid: Uint8Array
   vin: number
-  data: Uint8Array
+  data: NameElement[]
 }
 
 export interface InvalidInscription {
@@ -30,7 +32,29 @@ export interface InvalidInscription {
   block_height: number
   hash: Uint8Array
   reason: string
-  data: Uint8Array
+  data: NameElement[]
+}
+
+export function diagName(val: Array<NameElement>): string {
+  const srvArr = val[2] as Array<NameElement>
+  const sigArr = val[3] as Array<Uint8Array>
+  let name = `name: ${val[0]}\n`
+  name += `sequence: ${val[1]}\n`
+  name += `service:\n`
+  name += `  code: ${srvArr[0]}\n`
+  name += `  operations:\n`
+  for (const op of srvArr[1] as Array<Array<NameElement>>) {
+    name += `  - subcode: ${op[0]}\n`
+    name += `    params: 0x${BytesToHex(encode(op[1]))}\n`
+  }
+  if (srvArr[2]) {
+    name += `  approver: ${srvArr[2]}\n`
+  }
+  name += `signatures:\n`
+  for (const sig of sigArr) {
+    name += `- 0x${BytesToHex(sig)}\n`
+  }
+  return name
 }
 
 const path = '/v1/inscription'
@@ -60,7 +84,7 @@ export function useInscriptionAPI() {
   )
 
   const getInscriptionByHeight = useCallback(
-    (params: { height: number }, signal?: AbortSignal) => {
+    (params: { height: string | number }, signal?: AbortSignal) => {
       return request.get<{ result: Inscription }>(
         path + '/get_by_height',
         params,
@@ -125,21 +149,36 @@ export function useInscriptionAPI() {
   } as const
 }
 
-export function useInscription(name: string, sequence: number) {
-  const { getInscription } = useInscriptionAPI()
+export function useInscription({
+  height,
+  name,
+  sequence,
+}: {
+  height?: number | string
+  name?: string
+  sequence?: number | string
+}) {
+  const { getInscription, getInscriptionByHeight } = useInscriptionAPI()
 
   const getKey = useCallback(() => {
-    if (!name) return null
+    if (!name && !height) return null
+    if (height) {
+      return ['useInscriptions', height] as const
+    }
+
     const params = {
       name,
       sequence: String(sequence),
     }
     return ['useInscription', params] as const
-  }, [name, sequence])
+  }, [height, name, sequence])
 
   const { data, error, isValidating, isLoading } = useSWR(
     getKey,
-    ([_keyPrefix, params]) => getInscription(params),
+    ([keyPrefix, params]) =>
+      keyPrefix == 'useInscriptions'
+        ? getInscriptionByHeight({ height: params })
+        : getInscription(params),
     {}
   )
 
@@ -154,28 +193,24 @@ export function useInscription(name: string, sequence: number) {
 export function useLastAcceptedInscription() {
   const { getLastAcceptedInscription } = useInscriptionAPI()
 
-  const [controller, setController] = useState<AbortController | undefined>()
-
-  useEffect(() => {
-    const controller = new AbortController()
-    setController(controller)
-    return () => controller.abort()
-  }, [])
+  const controllerRef = useRef<AbortController | undefined>(undefined)
 
   const { data, error } = useSWRSubscription(
     'useLastAcceptedInscription',
     ([_], { next }) => {
+      const controller = new AbortController()
+      controllerRef.current?.abort()
+      controllerRef.current = controller
       ;(async () => {
-        const v = true
-        while (v) {
-          const result = await getLastAcceptedInscription(controller?.signal)
+        while (!controller.signal.aborted) {
+          const result = await getLastAcceptedInscription(controller.signal)
           if (result) {
             next(undefined, result)
           }
           await new Promise((resolve) => setTimeout(resolve, 5000))
         }
       })().catch((err) => next(err))
-      return () => controller?.abort()
+      return () => controller.abort()
     }
   )
 
@@ -188,28 +223,24 @@ export function useLastAcceptedInscription() {
 export function useBestInscriptions() {
   const { listBestInscriptions } = useInscriptionAPI()
 
-  const [controller, setController] = useState<AbortController | undefined>()
-
-  useEffect(() => {
-    const controller = new AbortController()
-    setController(controller)
-    return () => controller.abort()
-  }, [])
+  const controllerRef = useRef<AbortController | undefined>(undefined)
 
   const { data, error } = useSWRSubscription(
     'useBestInscriptions',
     ([_], { next }) => {
+      const controller = new AbortController()
+      controllerRef.current?.abort()
+      controllerRef.current = controller
       ;(async () => {
-        const v = true
-        while (v) {
-          const result = await listBestInscriptions(controller?.signal)
+        while (!controller.signal.aborted) {
+          const result = await listBestInscriptions(controller.signal)
           if (result) {
             next(undefined, result)
           }
           await new Promise((resolve) => setTimeout(resolve, 5000))
         }
       })().catch((err) => next(err))
-      return () => controller?.abort()
+      return () => controller.abort()
     }
   )
 
@@ -252,7 +283,7 @@ export function useInscriptions(last_accepted_height: number) {
     return (height as number) > 1
   }, [data, error])
 
-  const loadMore = useCallback(() => setSize((size) => size + 1), [setSize])
+  const loadMore = useCallback(() => setSize((size) => size + 3), [setSize])
 
   return {
     isLoading,

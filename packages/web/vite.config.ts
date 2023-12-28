@@ -9,7 +9,7 @@ const buildEnv = process.env['npm_package_scripts_build'] || ''
 
 const scope =
   buildEnv.includes('testing') || !buildEnv.includes('--mode')
-    ? 'http://www.ns.dev'
+    ? 'http://127.0.0.1'
     : 'https://www.ns.top'
 const cdnPrefix =
   buildEnv.includes('testing') || !buildEnv.includes('--mode')

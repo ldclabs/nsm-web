@@ -75,7 +75,7 @@ export default function AboutPage() {
             target='_blank'
             rel='noreferrer'
           >
-            github.com/ldclabs/ns-rs/crates/ns-indexer
+            ldclabs/ns-rs/crates/ns-indexer
           </a>
         </p>
         <p>
@@ -85,7 +85,17 @@ export default function AboutPage() {
             target='_blank'
             rel='noreferrer'
           >
-            github.com/ldclabs/ns-rs/crates/ns-inscriber
+            ldclabs/ns-rs/crates/ns-inscriber
+          </a>
+        </p>
+        <p>
+          <label>Twitter: </label>
+          <a
+            href='https://twitter.com/ldc_labs'
+            target='_blank'
+            rel='noreferrer'
+          >
+            twitter.com/ldc_labs
           </a>
         </p>
       </div>

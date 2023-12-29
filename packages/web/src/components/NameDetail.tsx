@@ -20,13 +20,15 @@ export default function NameDetail({
   const intl = useIntl()
   const theme = useTheme()
   return (
-    <fieldset
+    <div
       css={css`
+        position: relative;
         display: flex;
         flex-direction: column;
         width: 100%;
         height: fit-content;
         flex: 1;
+        padding: 16px;
         gap: 8px;
         min-width: 0; // for flexbox to work
         min-height: 0; // for flexbox to work
@@ -70,18 +72,22 @@ export default function NameDetail({
         }
       `}
     >
-      <legend
+      <Link
+        to={`/indexer/inscription?name=${nameState.name}&sequence=${nameState.sequence}`}
         css={css`
-          ${theme.typography.h2}
+          position: absolute;
+          display: block;
+          top: 16px;
+          right: 16px;
+          padding: 0 8px;
+          max-width: 50%;
+          text-align: right;
           color: ${theme.palette.primaryNormal};
+          ${theme.typography.h1}
         `}
       >
-        <Link
-          to={`/indexer/inscription?name=${nameState.name}&sequence=${nameState.sequence}`}
-        >
-          {nameState.name}
-        </Link>
-      </legend>
+        {nameState.name}
+      </Link>
       <div>
         <label>
           {intl.formatMessage({ defaultMessage: 'Name sequence:' })}
@@ -150,6 +156,6 @@ export default function NameDetail({
           </textarea>
         </div>
       )}
-    </fieldset>
+    </div>
   )
 }

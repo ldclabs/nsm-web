@@ -13,13 +13,15 @@ export default function InscriptionDetail({
   const tx = BytesToHex(Uint8Array.from(inscription.txid).reverse())
   const block = BytesToHex(Uint8Array.from(inscription.block_hash).reverse())
   return (
-    <fieldset
+    <div
       css={css`
+        position: relative;
         display: flex;
         flex-direction: column;
         width: 100%;
         height: fit-content;
         flex: 1;
+        padding: 16px;
         gap: 8px;
         min-width: 0; // for flexbox to work
         min-height: 0; // for flexbox to work
@@ -63,16 +65,22 @@ export default function InscriptionDetail({
         }
       `}
     >
-      <legend
+      <Link
+        to={`/indexer/name?name=${inscription.name}`}
         css={css`
-          ${theme.typography.h2}
+          position: absolute;
+          display: block;
+          top: 16px;
+          right: 16px;
+          padding: 0 8px;
+          max-width: 50%;
+          text-align: right;
           color: ${theme.palette.primaryNormal};
+          ${theme.typography.h1}
         `}
       >
-        <Link to={`/indexer/name?name=${inscription.name}`}>
-          {inscription.name}
-        </Link>
-      </legend>
+        {inscription.name}
+      </Link>
       <div>
         <label>
           {intl.formatMessage({ defaultMessage: 'Name sequence:' })}
@@ -147,6 +155,6 @@ export default function InscriptionDetail({
           {diagName(inscription.data)}
         </textarea>
       </div>
-    </fieldset>
+    </div>
   )
 }

@@ -2,7 +2,7 @@ import { SetHeaderProps } from '#/App'
 import { css } from '@emotion/react'
 import { useToast } from '@ldclabs/component'
 
-export default function Wallet() {
+export default function AccountPage() {
   const { renderToastContainer } = useToast()
 
   return (
@@ -12,14 +12,14 @@ export default function Wallet() {
         <div
           css={css`
             flex: 1;
-            margin: 0 36px;
+            margin: 0 12px;
             display: flex;
             align-items: center;
-            justify-content: flex-end;
+            justify-content: flex-start;
             gap: 16px;
           `}
         >
-          Wallet
+          Accounts
         </div>
       </SetHeaderProps>
       <div
@@ -35,7 +35,7 @@ export default function Wallet() {
           border-radius: 30px;
         `}
       >
-        Wallet
+        Account
       </div>
     </>
   )

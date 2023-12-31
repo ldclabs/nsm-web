@@ -1,7 +1,12 @@
 import { css, useTheme } from '@emotion/react'
-import { useAuth, type IdentityProvider } from '@ldclabs/store'
+import {
+  passKeyIsAvailable,
+  passKeyIsExist,
+  useAuth,
+  type IdentityProvider,
+} from '@ldclabs/store'
 import { stopPropagation } from '@ldclabs/util'
-import { memo, useCallback, useMemo } from 'react'
+import { memo, useCallback, useEffect, useState } from 'react'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Icon, type IconName } from '.'
 import {
@@ -10,36 +15,19 @@ import {
   AlertDialogClose,
   AlertDialogHead,
 } from './AlertDialog'
-import { Avatar } from './Avatar'
 import { Button } from './Button'
-import { Menu, type MenuProps } from './Menu'
+import { type MenuProps } from './Menu'
 import { Spinner } from './Spinner'
+import { TextField } from './TextField'
 
 export const AccountManager = memo(function AccountManager({
-  items: _items,
   ...props
 }: MenuProps) {
   const intl = useIntl()
-  const { user, dialog, authorize, authorizingProvider, logout } = useAuth()
-  const items = useMemo(() => {
-    return (_items || []).concat({
-      label: intl.formatMessage({ defaultMessage: 'Sign Out' }),
-      danger: true,
-      onClick: logout,
-    })
-  }, [_items, intl, logout])
+  const { user, dialog, authorize, authorizingProvider } = useAuth()
 
   return user ? (
-    <Menu
-      anchor={(props) => (
-        <button {...props}>
-          <Avatar src={user.picture} name={user.name} />
-        </button>
-      )}
-      placement='bottom-end'
-      items={items}
-      {...props}
-    />
+    props.children
   ) : (
     <AlertDialog
       open={dialog.open}
@@ -50,6 +38,9 @@ export const AccountManager = memo(function AccountManager({
           {intl.formatMessage({ defaultMessage: 'Sign In' })}
         </Button>
       )}
+      css={css`
+        max-width: 400px;
+      `}
     >
       <AlertDialogHead>
         <FormattedMessage defaultMessage='Sign In' />
@@ -62,10 +53,10 @@ export const AccountManager = memo(function AccountManager({
         `}
       >
         <ProviderItem
-          provider={'github'}
-          providerLogo={'github'}
-          providerName={intl.formatMessage({ defaultMessage: 'GitHub' })}
-          isAuthorizing={authorizingProvider === 'github'}
+          provider={'Passkey'}
+          providerLogo={'passkey'}
+          providerName={intl.formatMessage({ defaultMessage: 'Passkey' })}
+          isAuthorizing={authorizingProvider === 'Passkey'}
           disabled={!!authorizingProvider}
           onAuthorize={authorize}
         />
@@ -88,57 +79,135 @@ function ProviderItem({
   providerName: string
   isAuthorizing: boolean
   disabled: boolean
-  onAuthorize: (provider: IdentityProvider) => void
+  onAuthorize: (provider: IdentityProvider, display_name: string) => void
 }) {
   const intl = useIntl()
   const theme = useTheme()
+
+  const [name, setName] = useState('')
+  const handleDisplayNameChange = useCallback(
+    (ev: React.ChangeEvent<HTMLInputElement>) => {
+      setName(ev.currentTarget.value.trim())
+    },
+    []
+  )
   const onClick = useCallback(
-    () => onAuthorize(provider),
-    [onAuthorize, provider]
+    () => onAuthorize(provider, name),
+    [onAuthorize, provider, name]
   )
 
+  const passKeyAvailable = passKeyIsAvailable()
+  const [passKeyExist, setPassKeyExist] = useState(false)
+  useEffect(() => {
+    passKeyIsExist().then(setPassKeyExist)
+  }, [setPassKeyExist])
+
   return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      css={css`
-        height: 42px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        border-radius: 12px;
-        border: 1px solid ${theme.palette.grayLight0};
-        background: ${theme.color.body.background};
-        color: ${theme.color.body.default};
-        cursor: pointer;
-        :disabled {
-          cursor: not-allowed;
-          opacity: 0.5;
-        }
-      `}
-    >
-      <div
+    <>
+      {provider == 'Passkey' && !passKeyExist && (
+        <>
+          <TextField
+            size='medium'
+            placeholder={intl.formatMessage({
+              defaultMessage: 'Display name',
+            })}
+            inputtype='text'
+            onChange={handleDisplayNameChange}
+            css={css`
+              flex: 1;
+              background: ${theme.effect.whiteMask};
+              input {
+                height: 42px;
+              }
+            `}
+          />
+          <button
+            onClick={onClick}
+            disabled={name == ''}
+            css={css`
+              height: 42px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 8px;
+              margin-bottom: 16px;
+              border-radius: 12px;
+              border: 1px solid ${theme.palette.grayLight0};
+              background: ${theme.effect.goldMask};
+              color: ${theme.palette.grayLight1};
+              cursor: pointer;
+              :disabled {
+                cursor: not-allowed;
+                opacity: 0.5;
+              }
+            `}
+          >
+            <div
+              css={css`
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              `}
+            >
+              {isAuthorizing ? (
+                <Spinner size={16} />
+              ) : (
+                <Icon name={providerLogo} size={16} />
+              )}
+            </div>
+            <span>
+              {intl.formatMessage(
+                { defaultMessage: 'Register Passkey' },
+                { provider: providerName }
+              )}
+            </span>
+          </button>
+        </>
+      )}
+      <button
+        onClick={onClick}
+        disabled={!passKeyAvailable}
         css={css`
-          width: 20px;
-          height: 20px;
+          height: 42px;
           display: flex;
           align-items: center;
           justify-content: center;
+          gap: 8px;
+          border-radius: 12px;
+          border: 1px solid ${theme.palette.grayLight0};
+          background: ${theme.effect.primaryMask};
+          color: ${theme.palette.grayLight1};
+          cursor: pointer;
+          :disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+          }
         `}
       >
-        {isAuthorizing ? (
-          <Spinner size={16} />
-        ) : (
-          <Icon name={providerLogo} size={16} />
-        )}
-      </div>
-      <span>
-        {intl.formatMessage(
-          { defaultMessage: 'By {provider}' },
-          { provider: providerName }
-        )}
-      </span>
-    </button>
+        <div
+          css={css`
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          `}
+        >
+          {isAuthorizing ? (
+            <Spinner size={16} />
+          ) : (
+            <Icon name={providerLogo} size={16} />
+          )}
+        </div>
+        <span>
+          {intl.formatMessage(
+            { defaultMessage: 'Sign in by {provider}' },
+            { provider: providerName }
+          )}
+        </span>
+      </button>
+    </>
   )
 }

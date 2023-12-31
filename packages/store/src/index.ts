@@ -1,6 +1,8 @@
 export {
   AuthProvider,
   authorized,
+  passKeyIsAvailable,
+  passKeyIsExist,
   setXLanguage,
   useAuth,
   useEnsureAuthorized,

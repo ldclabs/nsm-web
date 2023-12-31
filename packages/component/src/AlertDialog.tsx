@@ -24,9 +24,11 @@ export const AlertDialog = memo(
         {...props}
         ref={ref}
         css={css`
-          width: 444px;
+          right: 16px;
+          left: 16px;
+          width: auto;
           height: auto;
-          max-width: 100%;
+          max-width: 600px;
           max-height: 100%;
           top: 50%;
           bottom: unset;

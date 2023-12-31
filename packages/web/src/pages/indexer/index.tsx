@@ -40,7 +40,7 @@ export default function Home() {
   const [keyword, setKeyword] = useState('')
   const handleKeywordChange = useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
-      setKeyword(ev.currentTarget.value)
+      setKeyword(ev.currentTarget.value.trim())
     },
     []
   )

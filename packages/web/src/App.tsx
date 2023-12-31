@@ -6,7 +6,6 @@ import {
   Header,
   lightTheme,
   type HeaderProps,
-  type MenuProps,
 } from '@ldclabs/component'
 import {
   AuthProvider,
@@ -57,12 +56,12 @@ import { Navigation } from './Navigation'
 import Loading from './components/Loading'
 import { useLogger } from './logger'
 import AboutPage from './pages/about'
+import AccountPage from './pages/account'
 import Home from './pages/indexer'
 import InscriptionPage from './pages/indexer/inscription'
 import NameStatePage from './pages/indexer/name'
 import LoginStatePage from './pages/login/state'
 import Market from './pages/market'
-import Wallet from './pages/wallet'
 import { BREAKPOINT } from './shared'
 
 function Fallback({
@@ -117,10 +116,8 @@ export const LayoutDivRefContext =
 
 function Layout() {
   const logger = useLogger()
-  const intl = useIntl()
   const theme = useTheme()
   const { dialog } = useAuth()
-  const navigate = useNavigate()
 
   const layoutDivRef = useRef<HTMLDivElement>(null)
 
@@ -150,22 +147,6 @@ function Layout() {
 
   //#region header
   const [headerProps, setHeaderProps] = useState<HeaderProps>({})
-
-  const userMenu = useMemo<MenuProps>(
-    () => ({
-      items: [
-        {
-          label: intl.formatMessage({ defaultMessage: 'My Wallet' }),
-          style: { display: 'none' },
-        },
-        {
-          label: intl.formatMessage({ defaultMessage: 'My Names' }),
-          onClick: () => navigate(WALLET_PATH),
-        },
-      ],
-    }),
-    [intl, navigate]
-  )
   //#endregion
 
   return (
@@ -223,16 +204,17 @@ function Layout() {
           border: 2px solid ${theme.effect.whiteMask};
           border-radius: 16px;
           backdrop-filter: blur(2px);
-          @media (max-width: ${BREAKPOINT.small}px) {
+          @media (max-width: ${BREAKPOINT.small}px) or (max-height: ${BREAKPOINT.small}px) {
             border: 0;
             height: 100vh;
-            margin: 0;
+            width: 100vw;
+            max-width: 800px;
+            margin: 0 auto;
             border-radius: 0;
           }
         `}
       >
         <Header
-          userMenu={userMenu}
           {...headerProps}
           css={css`
             position: sticky;
@@ -296,7 +278,7 @@ export function SetHeaderProps(props: HeaderProps) {
   return null
 }
 
-export const WALLET_PATH = '/wallet'
+export const ACCOUNT_PATH = '/account'
 export const MARKET_PATH = '/market'
 
 const router = createBrowserRouter(
@@ -308,7 +290,7 @@ const router = createBrowserRouter(
         <Route path='name' element={<NameStatePage />} />
       </Route>
       <Route path={MARKET_PATH} element={<Market />} />
-      <Route path={WALLET_PATH} element={<Wallet />} />
+      <Route path={ACCOUNT_PATH} element={<AccountPage />} />
       <Route path='/help/about' element={<AboutPage />} />
       <Route path='/login/state' element={<LoginStatePage />} />
     </Route>

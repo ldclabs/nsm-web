@@ -8,20 +8,7 @@ export default function AboutPage() {
   const theme = useTheme()
   return (
     <>
-      <SetHeaderProps>
-        <div
-          css={css`
-            flex: 1;
-            margin: 0 36px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 16px;
-          `}
-        >
-          About
-        </div>
-      </SetHeaderProps>
+      <SetHeaderProps></SetHeaderProps>
       <div
         css={css`
           margin: 16px 0;

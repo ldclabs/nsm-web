@@ -1,5 +1,5 @@
 import { css, useTheme } from '@emotion/react'
-import { type MenuProps } from '@ldclabs/component'
+import { AccountManager, type MenuProps } from '@ldclabs/component'
 import { forwardRef, memo, type HTMLAttributes } from 'react'
 import { NavLink } from 'react-router-dom'
 
@@ -44,16 +44,18 @@ export const Navigation = memo(
         >
           Indexer
         </NavLink>
-        <NavLink
-          to='/help/about'
-          style={({ isActive, isPending, isTransitioning }) => {
-            return {
-              color: isActive ? theme.palette.gold : theme.palette.grayLight0,
-            }
-          }}
-        >
-          About
-        </NavLink>
+        <AccountManager>
+          <NavLink
+            to='/account'
+            style={({ isActive, isPending, isTransitioning }) => {
+              return {
+                color: isActive ? theme.palette.gold : theme.palette.grayLight0,
+              }
+            }}
+          >
+            Account
+          </NavLink>
+        </AccountManager>
       </footer>
     )
   })

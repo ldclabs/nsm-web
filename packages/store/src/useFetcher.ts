@@ -57,7 +57,10 @@ export function createRequest(
     if (xLanguage.current && !pa.has('language')) {
       pa.set('language', xLanguage.current)
     }
-    const url = joinURL(baseURL, path, pa)
+    const url =
+      path.startsWith('http://') || path.startsWith('https://')
+        ? joinURL(path, '', pa)
+        : joinURL(baseURL, path, pa)
 
     const headers = new Headers(defaultOptions.headers)
     new Headers(options?.headers).forEach((value, key) =>
@@ -65,6 +68,10 @@ export function createRequest(
     )
     if (!headers.has('Accept')) headers.set('Accept', CBOR_MIME_TYPE)
     if (xLanguage.current) headers.set('X-Language', xLanguage.current)
+
+    if (options) {
+      options.mode = 'cors'
+    }
     const resp = await fetch(url, { ...defaultOptions, ...options, headers })
     const { status } = resp
     const body =

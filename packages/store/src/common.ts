@@ -25,9 +25,9 @@ export function isInWechat() {
 
 export const BytesToBase64Url = (bytes: Uint8Array) =>
   btoa(String.fromCodePoint(...bytes))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '')
+    .replaceAll('+', '-')
+    .replaceAll('/', '_')
+    .replaceAll('=', '')
 
 export const BytesToHex = (bytes: Uint8Array) =>
   Array.from(bytes)

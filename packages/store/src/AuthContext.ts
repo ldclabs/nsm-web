@@ -2,11 +2,10 @@ import {
   Channel,
   createAction,
   isWindow,
-  joinURL,
   useIsMounted,
-  waitUntilClosed,
   type ModalRef,
 } from '@ldclabs/util'
+import { client, utils } from '@passwordless-id/webauthn'
 import {
   createContext,
   createElement,
@@ -23,18 +22,14 @@ import {
   Observable,
   catchError,
   concatMap,
-  filter,
   finalize,
   from,
-  merge,
-  take,
-  takeUntil,
   tap,
-  timer,
   type Subscription,
 } from 'rxjs'
-import { isInWechat, type UserInfo } from './common'
+import { type UserInfo } from './common'
 import { useLogger } from './logger'
+import { authStore } from './store'
 import {
   createRequest,
   useFetcherConfig,
@@ -50,7 +45,43 @@ interface AccessToken {
   expires_in: number
 }
 
-export type IdentityProvider = 'github' | 'google' | 'wechat' | 'wechat_h5'
+export type IdentityProvider = 'Passkey' | 'Github'
+
+interface ChallengeOutput {
+  rp_id: string
+  rp_name: string
+  user_handle: string
+  challenge: Uint8Array
+}
+
+interface Authentication {
+  id: string
+  authenticator_data: Uint8Array
+  client_data: Uint8Array
+  signature: Uint8Array
+  ip: string
+  device_id: string
+  device_desc: string
+}
+
+interface CredentialUserEntity {
+  id: string // credential id in base64url
+  transports: AuthenticatorTransport[]
+  display_name: string
+  picture: string
+}
+
+const CredentialUserEntitiesKey = 'CredentialUserEntitys'
+
+export function passKeyIsAvailable() {
+  return client.isAvailable()
+}
+
+export async function passKeyIsExist() {
+  const credentialUserEntities: CredentialUserEntity[] =
+    (await authStore.getItem(CredentialUserEntitiesKey)) || []
+  return client.isAvailable() && credentialUserEntities.length > 0
+}
 
 class AuthAPI {
   private request: ReturnType<typeof createRequest>
@@ -74,59 +105,192 @@ class AuthAPI {
 
   private authentication = createAction<{ status: number }>('__AUTH_CALLBACK__')
 
-  authorize(provider: IdentityProvider, signal: AbortSignal | null) {
-    return new Observable<UserInfo>((observer) => {
-      const { AUTH_URL, PUBLIC_PATH } = this.config
+  private async passkeyGetChallenge() {
+    const res = await this.request.get<ChallengeOutput>(
+      '/passkey/get_challenge'
+    )
+    return res
+  }
 
-      if (isInWechat()) {
-        const idp = provider == 'wechat' ? 'wechat_h5' : provider
-        const url = joinURL(AUTH_URL, `/idp/${idp}/authorize`, {
-          next_url: document.location.href,
-        })
-        window.location.assign(url)
-        return
-      }
+  private async passkeyRegister(
+    display_name: string,
+    challenge: ChallengeOutput
+  ) {
+    const creationOptions: PublicKeyCredentialCreationOptions = {
+      challenge: challenge.challenge.buffer,
+      rp: {
+        id: challenge.rp_id,
+        name: challenge.rp_name,
+      },
+      user: {
+        id: utils.parseBase64url(challenge.user_handle),
+        name: display_name,
+        displayName: display_name,
+      },
+      pubKeyCredParams: [
+        { alg: -8, type: 'public-key' }, // Ed25519
+        { alg: -7, type: 'public-key' }, // ES256 (Webauthn's default algorithm)
+        { alg: -257, type: 'public-key' }, // RS256 (for Windows Hello and others)
+      ],
+      timeout: 60000,
+      authenticatorSelection: {
+        userVerification: 'required', // Webauthn default is "preferred"
+        authenticatorAttachment: 'cross-platform',
+        residentKey: 'preferred', // official default is 'discouraged'
+        requireResidentKey: false,
+      },
+      attestation: 'none',
+    }
 
-      const url = joinURL(AUTH_URL, `/idp/${provider}/authorize`, {
-        next_url: joinURL(PUBLIC_PATH, '/login/state', { provider }),
+    const credential = (await navigator.credentials.create({
+      publicKey: creationOptions,
+    })) as any
+
+    const response = credential.response as AuthenticatorAttestationResponse
+
+    const registration = {
+      id: credential.id,
+      display_name,
+      authenticator_data: new Uint8Array(response.getAuthenticatorData()),
+      client_data: new Uint8Array(response.clientDataJSON),
+    }
+    const res = await this.request.post<any>(
+      '/passkey/verify_registration',
+      registration
+    )
+
+    const credentialUserEntities: CredentialUserEntity[] =
+      (await authStore.getItem(CredentialUserEntitiesKey)) || []
+    if (!credentialUserEntities.find((entity) => entity.id === credential.id)) {
+      credentialUserEntities.push({
+        id: credential.id,
+        transports: response.getTransports() as AuthenticatorTransport[],
+        display_name,
+        picture: '',
       })
+      await authStore.setItem(CredentialUserEntitiesKey, credentialUserEntities)
+    }
 
-      const popup = window.open(
-        url,
-        'NSProtocolLogin',
-        'popup=true,width=600,height=600,menubar=false,toolbar=false,location=false'
-      )
-      if (!popup) {
-        const url = joinURL(AUTH_URL, `/idp/${provider}/authorize`, {
-          next_url: document.location.href,
-        })
-        window.location.assign(url) // redirect if popup is blocked
-        return
-      }
+    return res
+  }
 
-      return merge(
-        timer(1000, 2000).pipe(takeUntil(waitUntilClosed(popup))),
-        waitUntilClosed(popup)
-      )
-        .pipe(
-          concatMap(async () => {
-            try {
-              return await this.fetchUser(signal)
-            } catch (error) {
-              if (popup.closed || signal?.aborted) {
-                throw error
-              } else {
-                return undefined
-              }
-            }
-          }),
-          filter((user) => !!user),
-          take(1),
-          finalize(() => {
-            popup.close()
-          })
-        )
-        .subscribe(observer)
+  private async passkeyGetAuthentication(
+    challenge: ChallengeOutput
+  ): Promise<Authentication | null> {
+    const credentialUserEntities: CredentialUserEntity[] =
+      (await authStore.getItem(CredentialUserEntitiesKey)) || []
+
+    // https://w3c.github.io/webauthn/#enum-transport
+    const transports: AuthenticatorTransport[] =
+      (await client.isLocalAuthenticator())
+        ? ['internal']
+        : [
+            'internal',
+            'hybrid',
+            'usb',
+            'ble',
+            'nfc',
+            // 'smart-card',
+          ]
+    const authOptions: PublicKeyCredentialRequestOptions = {
+      challenge: challenge.challenge.buffer,
+      rpId: challenge.rp_id,
+      allowCredentials: credentialUserEntities.map((entity) => {
+        return {
+          id: utils.parseBase64url(entity.id),
+          type: 'public-key',
+          transports:
+            entity.transports?.length > 0 ? entity.transports : transports,
+        }
+      }),
+      userVerification: 'required',
+      timeout: 60000,
+    }
+
+    let auth: Credential | null = null
+    try {
+      auth = await navigator.credentials.get({
+        publicKey: authOptions,
+        mediation: 'optional', // https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/get#mediation
+      })
+    } catch (err) {
+      console.error(err)
+    }
+
+    if (!auth) {
+      return null
+    }
+
+    const response = (auth as any).response as AuthenticatorAssertionResponse
+
+    return {
+      id: auth.id,
+      authenticator_data: new Uint8Array(response.authenticatorData),
+      client_data: new Uint8Array(response.clientDataJSON),
+      signature: new Uint8Array(response.signature),
+      ip: '',
+      device_id: '',
+      device_desc: '',
+    }
+  }
+
+  private async passkeyVerifyAuthentication(authentication: Authentication) {
+    const res = await this.request.post<any>(
+      '/passkey/verify_authentication',
+      authentication
+    )
+    const credentialUserEntities: CredentialUserEntity[] =
+      (await authStore.getItem(CredentialUserEntitiesKey)) || []
+    if (
+      !credentialUserEntities.find((entity) => entity.id === authentication.id)
+    ) {
+      credentialUserEntities.push({
+        id: authentication.id,
+        transports: [],
+        display_name: '',
+        picture: '',
+      })
+      await authStore.setItem(CredentialUserEntitiesKey, credentialUserEntities)
+    }
+    return res
+  }
+
+  authorize(
+    provider: IdentityProvider,
+    display_name: string,
+    signal: AbortSignal | null
+  ) {
+    return new Observable<UserInfo>((observer) => {
+      ;(async () => {
+        if (provider === 'Passkey') {
+          if (!client.isAvailable()) {
+            throw new Error('Passkey (Webauthn) is not available')
+          }
+          const challenge = await this.passkeyGetChallenge()
+          let authentication = await this.passkeyGetAuthentication(challenge)
+
+          if (!authentication) {
+            await this.passkeyRegister(
+              display_name || 'ns-' + challenge.user_handle.slice(0, 6),
+              challenge
+            )
+            authentication = await this.passkeyGetAuthentication(challenge)
+          }
+
+          if (!authentication) {
+            throw new Error('Passkey (Webauthn) authentication failed')
+          }
+          this.passkeyVerifyAuthentication(authentication)
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 500))
+        const user = await this.fetchUser(signal)
+        observer.next(user)
+        observer.complete()
+      })().catch((error: Error) => {
+        console.error('authorize failed:', error)
+        observer.error(error)
+      })
     })
   }
 
@@ -154,7 +318,7 @@ interface State {
   accessToken?: string | undefined
   refreshInterval?: number | undefined
   dialog: ModalRef
-  authorize: (provider: IdentityProvider) => void
+  authorize: (provider: IdentityProvider, display_name: string) => void
   authorizingProvider?: IdentityProvider | undefined
   callback: (payload: { status: number }) => void
   logout: () => void
@@ -259,7 +423,9 @@ export function authorized(
 }
 
 export function AuthProvider(
-  props: React.PropsWithChildren<{ fallback?: React.ReactNode }>
+  props: React.PropsWithChildren<{
+    fallback?: React.ReactNode
+  }>
 ) {
   const logger = useLogger()
   const config = useFetcherConfig()
@@ -346,13 +512,13 @@ export function AuthProvider(
 
   useEffect(() => {
     const subscriptionList = new Set<Subscription>()
-    const authorize = (provider: IdentityProvider) => {
+    const authorize = (provider: IdentityProvider, display_name: string) => {
       const controller = new AbortController()
       authorizingControllerRef.current?.abort()
       authorizingControllerRef.current = controller
       setState((state) => ({ ...state, authorizingProvider: provider }))
       const subscription = authAPI
-        .authorize(provider, controller.signal)
+        .authorize(provider, display_name, controller.signal)
         .pipe(
           concatMap(() => refresh(authAPI, controller.signal)),
           tap(() => {

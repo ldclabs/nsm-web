@@ -1,6 +1,6 @@
 import { css, useTheme } from '@emotion/react'
 import { forwardRef, memo, useCallback, type HTMLAttributes } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { Logo } from './Logo'
 import { type MenuProps } from './Menu'
 
@@ -51,6 +51,16 @@ export const Header = memo(
           <Logo role='heading' aria-level={1} />
         </Link>
         {props.children}
+        <NavLink
+          to='/help/about'
+          style={({ isActive, isPending, isTransitioning }) => {
+            return {
+              color: isActive ? theme.palette.gold : theme.palette.grayLight0,
+            }
+          }}
+        >
+          About
+        </NavLink>
       </header>
     )
   })

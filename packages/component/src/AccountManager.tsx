@@ -91,8 +91,13 @@ function ProviderItem({
     },
     []
   )
-  const onClick = useCallback(
-    () => onAuthorize(provider, name),
+
+  const onClick = useCallback(() => {
+    onAuthorize(provider, '')
+  }, [onAuthorize, provider])
+
+  const handleRegisterPasskey = useCallback(
+    () => onAuthorize(provider, name || 'NS'),
     [onAuthorize, provider, name]
   )
 
@@ -106,24 +111,36 @@ function ProviderItem({
     <>
       {provider == 'Passkey' && !passKeyExist && (
         <>
-          <TextField
-            size='medium'
-            placeholder={intl.formatMessage({
-              defaultMessage: 'Display name',
-            })}
-            inputtype='text'
-            onChange={handleDisplayNameChange}
-            css={css`
-              flex: 1;
-              background: ${theme.effect.whiteMask};
-              input {
-                height: 42px;
-              }
-            `}
-          />
+          {passKeyAvailable ? (
+            <TextField
+              size='medium'
+              placeholder={intl.formatMessage({
+                defaultMessage: 'Display name',
+              })}
+              inputtype='text'
+              onChange={handleDisplayNameChange}
+              css={css`
+                flex: 1;
+                background: ${theme.effect.whiteMask};
+                input {
+                  height: 42px;
+                }
+              `}
+            />
+          ) : (
+            <p
+              css={css`
+                color: ${theme.palette.orange};
+              `}
+            >
+              {intl.formatMessage({
+                defaultMessage: 'Passkey is not available',
+              })}
+            </p>
+          )}
           <button
-            onClick={onClick}
-            disabled={name == ''}
+            onClick={handleRegisterPasskey}
+            disabled={name == '' || !passKeyAvailable}
             css={css`
               height: 42px;
               display: flex;
@@ -158,10 +175,7 @@ function ProviderItem({
               )}
             </div>
             <span>
-              {intl.formatMessage(
-                { defaultMessage: 'Register a Passkey' },
-                { provider: providerName }
-              )}
+              {intl.formatMessage({ defaultMessage: 'Register a Passkey' })}
             </span>
           </button>
         </>

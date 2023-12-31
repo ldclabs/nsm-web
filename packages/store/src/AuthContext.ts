@@ -134,10 +134,8 @@ class AuthAPI {
       ],
       timeout: 60000,
       authenticatorSelection: {
-        userVerification: 'required', // Webauthn default is "preferred"
-        authenticatorAttachment: 'cross-platform',
-        residentKey: 'preferred', // official default is 'discouraged'
-        requireResidentKey: false,
+        userVerification: 'preferred',
+        residentKey: 'required',
       },
       attestation: 'none',
     }
@@ -203,7 +201,7 @@ class AuthAPI {
             entity.transports?.length > 0 ? entity.transports : transports,
         }
       }),
-      userVerification: 'required',
+      userVerification: 'preferred',
       timeout: 60000,
     }
 
@@ -211,7 +209,6 @@ class AuthAPI {
     try {
       auth = await navigator.credentials.get({
         publicKey: authOptions,
-        mediation: 'optional', // https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/get#mediation
       })
     } catch (err) {
       console.error(err)
@@ -266,20 +263,19 @@ class AuthAPI {
           if (!client.isAvailable()) {
             throw new Error('Passkey (Webauthn) is not available')
           }
-          const challenge = await this.passkeyGetChallenge()
-          let authentication = await this.passkeyGetAuthentication(challenge)
 
-          if (!authentication) {
-            await this.passkeyRegister(
-              display_name || 'ns-' + challenge.user_handle.slice(0, 6),
-              challenge
-            )
-            authentication = await this.passkeyGetAuthentication(challenge)
+          const challenge = await this.passkeyGetChallenge()
+
+          if (display_name) {
+            await this.passkeyRegister(display_name, challenge)
+            await new Promise((resolve) => setTimeout(resolve, 1000))
           }
 
+          const authentication = await this.passkeyGetAuthentication(challenge)
           if (!authentication) {
             throw new Error('Passkey (Webauthn) authentication failed')
           }
+
           this.passkeyVerifyAuthentication(authentication)
         }
 

@@ -159,7 +159,7 @@ function ProviderItem({
             </div>
             <span>
               {intl.formatMessage(
-                { defaultMessage: 'Register Passkey' },
+                { defaultMessage: 'Register a Passkey' },
                 { provider: providerName }
               )}
             </span>
@@ -203,7 +203,7 @@ function ProviderItem({
         </div>
         <span>
           {intl.formatMessage(
-            { defaultMessage: 'Sign in by {provider}' },
+            { defaultMessage: 'Sign in with {provider}' },
             { provider: providerName }
           )}
         </span>

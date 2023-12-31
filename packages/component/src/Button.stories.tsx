@@ -70,7 +70,7 @@ export const BasicIconButton: Story = {
   name: 'Icon Button',
   render: (args) => <IconButton {...(args as IconButtonProps)} />,
   args: {
-    iconName: 'closecircle',
+    iconName: 'closecircle2',
     color: 'secondary',
     variant: 'text',
     shape: 'circle',

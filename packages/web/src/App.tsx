@@ -10,6 +10,7 @@ import {
 import {
   AuthProvider,
   FetcherConfigProvider,
+  authorized,
   useAuth,
   type FetcherConfig,
 } from '@ldclabs/store'
@@ -53,6 +54,7 @@ import {
 } from 'react-router-dom'
 import { SWRConfig, type SWRConfiguration } from 'swr'
 import { Navigation } from './Navigation'
+import AuthorizedFallback from './components/AuthorizedFallback'
 import Loading from './components/Loading'
 import { useLogger } from './logger'
 import AboutPage from './pages/about'
@@ -290,7 +292,10 @@ const router = createBrowserRouter(
         <Route path='name' element={<NameStatePage />} />
       </Route>
       <Route path={MARKET_PATH} element={<Market />} />
-      <Route path={ACCOUNT_PATH} element={<AccountPage />} />
+      <Route
+        path={ACCOUNT_PATH}
+        element={authorized(<AccountPage />, <AuthorizedFallback />)}
+      />
       <Route path='/help/about' element={<AboutPage />} />
       <Route path='/login/state' element={<LoginStatePage />} />
     </Route>

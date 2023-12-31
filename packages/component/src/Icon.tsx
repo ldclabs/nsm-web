@@ -15,6 +15,7 @@ const SVG_LIST = {
   'closecircle2': () => import('./icon/24/closecircle.svg'),
   'code': () => import('./icon/remixicon/code-view.svg'),
   'delete': () => import('./icon/16/dele.svg'),
+  'edit': () => import('./icon/16/edit.svg'),
   'github': () => import('./icon/provider/github.svg'),
   'google': () => import('./icon/provider/google.svg'),
   'more': () => import('./icon/16/more.svg'),

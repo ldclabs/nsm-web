@@ -1,7 +1,6 @@
-import { useCallback, useMemo, useRef } from 'react'
+import { useCallback, useMemo } from 'react'
 import useSWR from 'swr'
 import useSWRInfinite from 'swr/infinite'
-import useSWRSubscription from 'swr/subscription'
 import { encode } from './CBOR'
 import { BytesToHex, type NameElement } from './common'
 import { useFetcher } from './useFetcher'
@@ -193,25 +192,10 @@ export function useInscription({
 export function useLastAcceptedInscription() {
   const { getLastAcceptedInscription } = useInscriptionAPI()
 
-  const controllerRef = useRef<AbortController | undefined>(undefined)
-
-  const { data, error } = useSWRSubscription(
+  const { data, error } = useSWR(
     'useLastAcceptedInscription',
-    ([_], { next }) => {
-      const controller = new AbortController()
-      controllerRef.current?.abort()
-      controllerRef.current = controller
-      ;(async () => {
-        while (!controller.signal.aborted) {
-          const result = await getLastAcceptedInscription(controller.signal)
-          if (result) {
-            next(undefined, result)
-          }
-          await new Promise((resolve) => setTimeout(resolve, 5000))
-        }
-      })().catch((err) => next(err))
-      return () => controller.abort()
-    }
+    ([_]) => getLastAcceptedInscription(),
+    { revalidateOnFocus: true, refreshInterval: 5000 }
   )
 
   return {
@@ -223,25 +207,10 @@ export function useLastAcceptedInscription() {
 export function useBestInscriptions() {
   const { listBestInscriptions } = useInscriptionAPI()
 
-  const controllerRef = useRef<AbortController | undefined>(undefined)
-
-  const { data, error } = useSWRSubscription(
+  const { data, error } = useSWR(
     'useBestInscriptions',
-    ([_], { next }) => {
-      const controller = new AbortController()
-      controllerRef.current?.abort()
-      controllerRef.current = controller
-      ;(async () => {
-        while (!controller.signal.aborted) {
-          const result = await listBestInscriptions(controller.signal)
-          if (result) {
-            next(undefined, result)
-          }
-          await new Promise((resolve) => setTimeout(resolve, 5000))
-        }
-      })().catch((err) => next(err))
-      return () => controller.abort()
-    }
+    ([_]) => listBestInscriptions(),
+    { revalidateOnFocus: true, refreshInterval: 5000 }
   )
 
   return {

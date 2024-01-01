@@ -144,6 +144,10 @@ class AuthAPI {
       publicKey: creationOptions,
     })) as any
 
+    if (!credential) {
+      throw new Error('Passkey (Webauthn) registration failed')
+    }
+
     const response = credential.response as AuthenticatorAttestationResponse
 
     const registration = {
@@ -174,7 +178,7 @@ class AuthAPI {
 
   private async passkeyGetAuthentication(
     challenge: ChallengeOutput
-  ): Promise<Authentication | null> {
+  ): Promise<Authentication> {
     const credentialUserEntities: CredentialUserEntity[] =
       (await authStore.getItem(CredentialUserEntitiesKey)) || []
 
@@ -182,14 +186,7 @@ class AuthAPI {
     const transports: AuthenticatorTransport[] =
       (await client.isLocalAuthenticator())
         ? ['internal']
-        : [
-            'internal',
-            'hybrid',
-            'usb',
-            'ble',
-            'nfc',
-            // 'smart-card',
-          ]
+        : ['internal', 'hybrid', 'usb', 'ble', 'nfc']
     const authOptions: PublicKeyCredentialRequestOptions = {
       challenge: challenge.challenge.buffer,
       rpId: challenge.rp_id,
@@ -205,17 +202,11 @@ class AuthAPI {
       timeout: 60000,
     }
 
-    let auth: Credential | null = null
-    try {
-      auth = await navigator.credentials.get({
-        publicKey: authOptions,
-      })
-    } catch (err) {
-      console.error(err)
-    }
-
+    const auth = await navigator.credentials.get({
+      publicKey: authOptions,
+    })
     if (!auth) {
-      return null
+      throw new Error('Passkey (Webauthn) authentication failed')
     }
 
     const response = (auth as any).response as AuthenticatorAssertionResponse
@@ -264,22 +255,18 @@ class AuthAPI {
             throw new Error('Passkey (Webauthn) is not available')
           }
 
-          const challenge = await this.passkeyGetChallenge()
-
           if (display_name) {
+            const challenge = await this.passkeyGetChallenge()
             await this.passkeyRegister(display_name, challenge)
-            await new Promise((resolve) => setTimeout(resolve, 1000))
+            await new Promise((resolve) => setTimeout(resolve, 2000))
           }
 
+          const challenge = await this.passkeyGetChallenge()
           const authentication = await this.passkeyGetAuthentication(challenge)
-          if (!authentication) {
-            throw new Error('Passkey (Webauthn) authentication failed')
-          }
-
-          this.passkeyVerifyAuthentication(authentication)
+          await this.passkeyVerifyAuthentication(authentication)
         }
 
-        await new Promise((resolve) => setTimeout(resolve, 500))
+        await new Promise((resolve) => setTimeout(resolve, 1000))
         const user = await this.fetchUser(signal)
         observer.next(user)
         observer.complete()
@@ -310,6 +297,7 @@ interface State {
   isInitialized: boolean
   isAuthorized: boolean
   language: string
+  error: string
   user?: UserInfo | undefined
   accessToken?: string | undefined
   refreshInterval?: number | undefined
@@ -324,6 +312,7 @@ const Context = createContext<Readonly<State>>({
   isInitialized: false,
   isAuthorized: false,
   language: '',
+  error: '',
   dialog: {
     open: false,
     show: () => {},
@@ -512,7 +501,11 @@ export function AuthProvider(
       const controller = new AbortController()
       authorizingControllerRef.current?.abort()
       authorizingControllerRef.current = controller
-      setState((state) => ({ ...state, authorizingProvider: provider }))
+      setState((state) => ({
+        ...state,
+        authorizingProvider: provider,
+        error: '',
+      }))
       const subscription = authAPI
         .authorize(provider, display_name, controller.signal)
         .pipe(
@@ -528,6 +521,7 @@ export function AuthProvider(
             setState((state) => ({
               ...state,
               authorizingProvider: undefined,
+              error: String(error),
             }))
             // TODO: handle error
             return EMPTY

@@ -24,7 +24,8 @@ export const AccountManager = memo(function AccountManager({
   ...props
 }: MenuProps) {
   const intl = useIntl()
-  const { user, dialog, authorize, authorizingProvider } = useAuth()
+  const theme = useTheme()
+  const { error, user, dialog, authorize, authorizingProvider } = useAuth()
 
   return user ? (
     props.children
@@ -55,6 +56,15 @@ export const AccountManager = memo(function AccountManager({
           gap: 16px;
         `}
       >
+        {error && (
+          <p
+            css={css`
+              color: ${theme.palette.orange};
+            `}
+          >
+            {error}
+          </p>
+        )}
         <ProviderItem
           provider={'Passkey'}
           providerLogo={'passkey'}
@@ -143,7 +153,7 @@ function ProviderItem({
           )}
           <button
             onClick={handleRegisterPasskey}
-            disabled={name == '' || !passKeyAvailable}
+            disabled={!passKeyAvailable || disabled || name == ''}
             css={css`
               height: 42px;
               display: flex;
@@ -185,7 +195,7 @@ function ProviderItem({
       )}
       <button
         onClick={onClick}
-        disabled={!passKeyAvailable}
+        disabled={!passKeyAvailable || disabled}
         css={css`
           height: 42px;
           display: flex;

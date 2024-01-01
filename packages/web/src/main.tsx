@@ -18,6 +18,8 @@ const intervalMS = 60 * 60 * 1000
 
 registerSW({
   // immediate: true,
+  onNeedRefresh() {},
+  onOfflineReady() {},
   onRegisteredSW(swUrl: string, r) {
     r &&
       setInterval(async () => {

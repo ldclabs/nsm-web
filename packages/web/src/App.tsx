@@ -54,6 +54,7 @@ import {
 } from 'react-router-dom'
 import { SWRConfig, type SWRConfiguration } from 'swr'
 import { Navigation } from './Navigation'
+import ReloadPrompt from './ReloadPrompt'
 import AuthorizedFallback from './components/AuthorizedFallback'
 import Loading from './components/Loading'
 import { useLogger } from './logger'
@@ -262,6 +263,7 @@ function Layout() {
                 }`};
           `}
         />
+        <ReloadPrompt />
       </main>
     </SetHeaderPropsContext.Provider>
   )

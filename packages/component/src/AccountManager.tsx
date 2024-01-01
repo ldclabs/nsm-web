@@ -39,7 +39,10 @@ export const AccountManager = memo(function AccountManager({
         </Button>
       )}
       css={css`
+        margin: 100px auto 50px;
         max-width: 400px;
+        top: 200px;
+        transform: unset;
       `}
     >
       <AlertDialogHead>

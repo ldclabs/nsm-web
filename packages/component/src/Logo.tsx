@@ -7,7 +7,7 @@ export type LogoSize = 'small' | 'medium'
 
 const SizeDict: Record<LogoSize, number> = {
   small: 24,
-  medium: 36,
+  medium: 32,
 }
 
 export interface LogoProps extends SVGAttributes<SVGSVGElement> {

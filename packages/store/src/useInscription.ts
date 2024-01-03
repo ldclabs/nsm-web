@@ -195,7 +195,7 @@ export function useLastAcceptedInscription() {
   const { data, error } = useSWR(
     'useLastAcceptedInscription',
     ([_]) => getLastAcceptedInscription(),
-    { revalidateOnFocus: true, refreshInterval: 5000 }
+    { revalidateOnFocus: true, refreshInterval: 8000 }
   )
 
   return {
@@ -210,12 +210,12 @@ export function useBestInscriptions() {
   const { data, error } = useSWR(
     'useBestInscriptions',
     ([_]) => listBestInscriptions(),
-    { revalidateOnFocus: true, refreshInterval: 5000 }
+    { revalidateOnFocus: true, refreshInterval: 8000 }
   )
 
   return {
     error,
-    items: (data || []) as Inscription[],
+    items: (data?.result || []) as Inscription[],
   } as const
 }
 

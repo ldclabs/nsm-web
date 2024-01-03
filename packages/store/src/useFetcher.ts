@@ -210,7 +210,8 @@ export class RequestError extends Error {
   }
 
   toString() {
-    if (this.requestId) return ['Request ID', this.requestId].join(': ')
+    if (this.requestId)
+      return ['Request ID', this.requestId + '\n' + this.message].join(': ')
     return compact([this.status, this.name]).join(' ')
   }
 }

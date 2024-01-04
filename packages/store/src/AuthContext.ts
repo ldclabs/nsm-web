@@ -27,6 +27,7 @@ import {
   tap,
   type Subscription,
 } from 'rxjs'
+import { decode } from './CBOR'
 import { type UserInfo } from './common'
 import { useLogger } from './logger'
 import { authStore } from './store'
@@ -162,10 +163,10 @@ class AuthAPI {
       client_data: new Uint8Array(response.clientDataJSON),
     }
     if (registration.authenticator_data.length === 0) {
-      throw new Error(
-        'Passkey (Webauthn) registration invalid: without authenticator_data'
-      )
+      const obj = decode(new Uint8Array(response.attestationObject))
+      registration.authenticator_data = new Uint8Array(obj.authData)
     }
+
     const res = await this.request.post<any>(
       '/passkey/verify_registration',
       registration
@@ -196,7 +197,7 @@ class AuthAPI {
     const transports: AuthenticatorTransport[] =
       (await client.isLocalAuthenticator())
         ? ['internal']
-        : ['internal', 'hybrid', 'usb', 'ble', 'nfc']
+        : ['internal', 'hybrid']
     const authOptions: PublicKeyCredentialRequestOptions = {
       challenge: challenge.challenge.buffer,
       rpId: challenge.rp_id,

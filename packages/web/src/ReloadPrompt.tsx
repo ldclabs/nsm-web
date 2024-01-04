@@ -4,6 +4,8 @@ import { useCallback } from 'react'
 import { useIntl } from 'react-intl'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 
+const intervalMS = 10 * 60 * 1000
+
 export default function ReloadPrompt() {
   const intl = useIntl()
   const theme = useTheme()
@@ -12,9 +14,23 @@ export default function ReloadPrompt() {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
   } = useRegisterSW({
-    onRegistered(r) {
-      // eslint-disable-next-line prefer-template
-      console.log('SW Registered: ' + r)
+    onRegisteredSW(swUrl: string, r) {
+      r &&
+        setInterval(async () => {
+          if (!(!r.installing && navigator)) return
+
+          if ('connection' in navigator && !navigator.onLine) return
+
+          const resp = await fetch(swUrl, {
+            cache: 'no-store',
+            headers: {
+              'cache': 'no-store',
+              'cache-control': 'no-cache',
+            },
+          })
+
+          if (resp?.status === 200) await r.update()
+        }, intervalMS)
     },
     onRegisterError(error) {
       console.log('SW registration error', error)

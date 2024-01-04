@@ -16,7 +16,10 @@ export default function NameStatePage() {
     item: nameState,
     isLoading,
     error,
-  } = useNameState(searchParams.get('name') || '')
+  } = useNameState(
+    searchParams.get('name') || '',
+    searchParams.get('best') == 'true'
+  )
 
   const { items: servicesState } = useNameServicesState(nameState?.name || '')
 

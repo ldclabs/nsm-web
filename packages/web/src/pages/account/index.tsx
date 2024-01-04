@@ -1,7 +1,9 @@
 import { SetHeaderProps } from '#/App'
+import UserInfo from '#/components/UserInfo'
 import { css, useTheme } from '@emotion/react'
-import { useToast } from '@ldclabs/component'
+import { Clickable, useToast } from '@ldclabs/component'
 import { useAuth } from '@ldclabs/store'
+import { useCallback, useState } from 'react'
 import { useIntl } from 'react-intl'
 
 export default function AccountPage() {
@@ -9,6 +11,10 @@ export default function AccountPage() {
   const theme = useTheme()
   const { renderToastContainer } = useToast()
   const { user } = useAuth()
+  const [openUserInfo, setOpenUserInfo] = useState(false)
+  const handleUserClick = useCallback(() => {
+    setOpenUserInfo((v) => !v)
+  }, [setOpenUserInfo])
 
   return (
     user && (
@@ -25,7 +31,7 @@ export default function AccountPage() {
               gap: 16px;
             `}
           >
-            {user.name}
+            <Clickable onClick={handleUserClick}>{user.name}</Clickable>
           </div>
         </SetHeaderProps>
         <div
@@ -63,6 +69,9 @@ export default function AccountPage() {
             </a>
           </p>
         </div>
+        {openUserInfo && (
+          <UserInfo open={openUserInfo} onClose={handleUserClick} />
+        )}
       </>
     )
   )

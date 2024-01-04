@@ -60,7 +60,11 @@ export default function Home() {
 
   const handleInscriptionClick = useCallback(
     (inscription: Inscription) => {
-      navigate(`/indexer/inscription?height=${inscription.height}`)
+      let url = `/indexer/inscription?height=${inscription.height}`
+      if (inscription.__best) {
+        url += `&best=true`
+      }
+      navigate(url)
     },
     [navigate]
   )

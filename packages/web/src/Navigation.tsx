@@ -35,6 +35,7 @@ export const Navigation = memo(
         `}
       >
         <NavLink
+          unstable_viewTransition={true}
           to='/indexer'
           style={({ isActive, isPending, isTransitioning }) => {
             return {
@@ -46,6 +47,7 @@ export const Navigation = memo(
         </NavLink>
         <AccountManager>
           <NavLink
+            unstable_viewTransition={true}
             to='/account'
             style={({ isActive, isPending, isTransitioning }) => {
               return {

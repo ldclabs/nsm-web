@@ -28,12 +28,10 @@ export default function NameDetail({
         width: 100%;
         height: fit-content;
         flex: 1;
-        padding: 16px;
         gap: 8px;
+        margin-top: 16px;
         min-width: 0; // for flexbox to work
         min-height: 0; // for flexbox to work
-        border-radius: 8px;
-        border: 2px solid ${theme.effect.primaryMask};
 
         > div {
           display: flex;
@@ -73,16 +71,19 @@ export default function NameDetail({
       `}
     >
       <Link
-        to={`/indexer/inscription?name=${nameState.name}&sequence=${nameState.sequence}`}
+        unstable_viewTransition={true}
+        to={`/indexer/inscription?name=${nameState.name}&sequence=${
+          nameState.sequence
+        }&best=${nameState.__best ? 'true' : ''}`}
         css={css`
           position: absolute;
           display: block;
-          top: 16px;
           right: 16px;
           padding: 0 8px;
           max-width: 50%;
           text-align: right;
           color: ${theme.palette.primaryNormal};
+          text-underline-offset: 8px !important;
           ${theme.typography.h1}
         `}
       >
@@ -151,9 +152,11 @@ export default function NameDetail({
           <label>
             {intl.formatMessage({ defaultMessage: 'Services diagnostic:' })}
           </label>
-          <textarea readOnly={true} className='scroll-x scroll-y'>
-            {diagServices(servicesState)}
-          </textarea>
+          <textarea
+            readOnly={true}
+            className='scroll-x scroll-y'
+            defaultValue={diagServices(servicesState)}
+          />
         </div>
       )}
     </div>

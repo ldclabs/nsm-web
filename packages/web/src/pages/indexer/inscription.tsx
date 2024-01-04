@@ -20,6 +20,7 @@ export default function InscriptionPage() {
     height: searchParams.get('height') || '',
     name: searchParams.get('name') || '',
     sequence: searchParams.get('sequence') || '',
+    best: searchParams.get('best') == 'true',
   })
 
   useEffect(() => {

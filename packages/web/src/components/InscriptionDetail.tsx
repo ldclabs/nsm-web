@@ -21,12 +21,10 @@ export default function InscriptionDetail({
         width: 100%;
         height: fit-content;
         flex: 1;
-        padding: 16px;
         gap: 8px;
+        margin-top: 16px;
         min-width: 0; // for flexbox to work
         min-height: 0; // for flexbox to work
-        border-radius: 8px;
-        border: 2px solid ${theme.effect.primaryMask};
 
         > div {
           display: flex;
@@ -66,16 +64,19 @@ export default function InscriptionDetail({
       `}
     >
       <Link
-        to={`/indexer/name?name=${inscription.name}`}
+        unstable_viewTransition={true}
+        to={`/indexer/name?name=${inscription.name}&best=${
+          inscription.__best ? 'true' : ''
+        }`}
         css={css`
           position: absolute;
           display: block;
-          top: 16px;
           right: 16px;
           padding: 0 8px;
           max-width: 50%;
           text-align: right;
-          color: ${theme.palette.primaryNormal};
+          color: ${theme.palette.gold};
+          text-underline-offset: 8px !important;
           ${theme.typography.h1}
         `}
       >
@@ -151,9 +152,11 @@ export default function InscriptionDetail({
         <label>
           {intl.formatMessage({ defaultMessage: 'Name diagnostic:' })}
         </label>
-        <textarea readOnly={true} className='scroll-x scroll-y'>
-          {diagName(inscription.data)}
-        </textarea>
+        <textarea
+          readOnly={true}
+          className='scroll-x scroll-y'
+          defaultValue={diagName(inscription.data)}
+        />
       </div>
     </div>
   )

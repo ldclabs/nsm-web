@@ -103,6 +103,10 @@ class AuthAPI {
     return this.request.get<AccessToken>('/access_token', undefined, signal)
   }
 
+  updateUserName(name: string, signal: AbortSignal | null) {
+    return this.request.patch<UserInfo>('/userinfo', { name }, signal)
+  }
+
   private authentication = createAction<{ status: number }>('__AUTH_CALLBACK__')
 
   private async passkeyGetChallenge() {
@@ -134,8 +138,9 @@ class AuthAPI {
       ],
       timeout: 60000,
       authenticatorSelection: {
-        userVerification: 'preferred',
-        residentKey: 'required',
+        userVerification: 'required',
+        residentKey: 'preferred',
+        requireResidentKey: true,
       },
       attestation: 'none',
     }
@@ -155,6 +160,11 @@ class AuthAPI {
       display_name,
       authenticator_data: new Uint8Array(response.getAuthenticatorData()),
       client_data: new Uint8Array(response.clientDataJSON),
+    }
+    if (registration.authenticator_data.length === 0) {
+      throw new Error(
+        'Passkey (Webauthn) registration invalid: without authenticator_data'
+      )
     }
     const res = await this.request.post<any>(
       '/passkey/verify_registration',
@@ -305,6 +315,7 @@ interface State {
   authorize: (provider: IdentityProvider, display_name: string) => void
   authorizingProvider?: IdentityProvider | undefined
   callback: (payload: { status: number }) => void
+  updateName: (display_name: string) => void
   logout: () => void
 }
 
@@ -321,6 +332,7 @@ const Context = createContext<Readonly<State>>({
   },
   authorize: () => {},
   callback: () => {},
+  updateName: () => {},
   logout: () => {},
 })
 
@@ -431,6 +443,7 @@ export function AuthProvider(
             ...state,
             isAuthorized: true,
             user,
+            error: '',
             accessToken: access_token,
             refreshInterval: expires_in,
           }))
@@ -473,6 +486,7 @@ export function AuthProvider(
             ...state,
             accessToken: access_token,
             refreshInterval: expires_in,
+            error: '',
           }))
         })
         .catch(() => {
@@ -515,6 +529,7 @@ export function AuthProvider(
               ...state,
               dialog: { ...state.dialog, open: false },
               authorizingProvider: undefined,
+              error: '',
             }))
           }),
           catchError((error) => {
@@ -538,6 +553,22 @@ export function AuthProvider(
       subscriptionList.add(subscription)
     }
     const callback = authAPI.callback.bind(authAPI)
+    const updateName = (display_name: string) => {
+      ;(async () => {
+        await authAPI.updateUserName(display_name, null)
+        const user = await authAPI.fetchUser(null)
+        setState((state) => ({
+          ...state,
+          user,
+          error: '',
+        }))
+      })().catch((error) => {
+        setState((state) => ({
+          ...state,
+          error: String(error),
+        }))
+      })
+    }
     const logout = () => {
       const subscription = from(authAPI.logout())
         .pipe(
@@ -559,7 +590,14 @@ export function AuthProvider(
         .subscribe()
       subscriptionList.add(subscription)
     }
-    setState((state) => ({ ...state, authorize, callback, logout }))
+    setState((state) => ({
+      ...state,
+      authorize,
+      callback,
+      updateName,
+      logout,
+      error: '',
+    }))
     return () => {
       subscriptionList.forEach((subscription) => subscription.unsubscribe())
       subscriptionList.clear()

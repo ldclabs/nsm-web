@@ -54,6 +54,7 @@ export default function AuthorizedFallback({
           {intl.formatMessage({ defaultMessage: 'Sign in' })}
         </Button>
         <Link
+          unstable_viewTransition={true}
           to='/'
           css={css`
             display: flex;

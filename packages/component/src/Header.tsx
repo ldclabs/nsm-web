@@ -40,6 +40,7 @@ export const Header = memo(
         `}
       >
         <Link
+          unstable_viewTransition={true}
           to='/'
           onClick={handleClick}
           css={css`
@@ -52,6 +53,7 @@ export const Header = memo(
         </Link>
         {props.children}
         <NavLink
+          unstable_viewTransition={true}
           to='/help/about'
           style={({ isActive, isPending, isTransitioning }) => {
             return {

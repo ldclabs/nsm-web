@@ -5,6 +5,8 @@ import { encode } from './CBOR'
 import { BytesToHex, type NameElement } from './common'
 import { useFetcher } from './useFetcher'
 
+const last_accepted = { height: 0 }
+
 export interface QueryInscription {
   name: string
   sequence?: number
@@ -24,6 +26,7 @@ export interface Inscription {
   txid: Uint8Array
   vin: number
   data: NameElement[]
+  __best?: boolean
 }
 
 export interface InvalidInscription {
@@ -71,13 +74,30 @@ export function useInscriptionAPI() {
     [request]
   )
 
+  const getBestInscription = useCallback(
+    (
+      params: Record<keyof QueryInscription, string | undefined>,
+      signal?: AbortSignal
+    ) => {
+      return request
+        .get<{ result: Inscription }>('/best/inscription', params, signal)
+        .catch(() => request.get<{ result: Inscription }>(path, params, signal))
+    },
+    [request]
+  )
+
   const getLastAcceptedInscription = useCallback(
     (signal?: AbortSignal) => {
-      return request.get<{ result: Inscription }>(
-        path + '/get_last_accepted',
-        undefined,
-        signal
-      )
+      return request
+        .get<{ result: Inscription }>(
+          path + '/get_last_accepted',
+          undefined,
+          signal
+        )
+        .then((res) => {
+          last_accepted.height = res.result.height
+          return res
+        })
     },
     [request]
   )
@@ -89,6 +109,25 @@ export function useInscriptionAPI() {
         params,
         signal
       )
+    },
+    [request]
+  )
+
+  const getBestInscriptionByHeight = useCallback(
+    (params: { height: string | number }, signal?: AbortSignal) => {
+      return request
+        .get<{ result: Inscription }>(
+          '/best/inscription/get_by_height',
+          params,
+          signal
+        )
+        .catch(() =>
+          request.get<{ result: Inscription }>(
+            path + '/get_by_height',
+            params,
+            signal
+          )
+        )
     },
     [request]
   )
@@ -139,8 +178,10 @@ export function useInscriptionAPI() {
 
   return {
     getInscription,
+    getBestInscription,
     getLastAcceptedInscription,
     getInscriptionByHeight,
+    getBestInscriptionByHeight,
     listBestInscriptions,
     listInscriptionsByName,
     listInscriptionsByBlockHeight,
@@ -152,12 +193,19 @@ export function useInscription({
   height,
   name,
   sequence,
+  best = false,
 }: {
   height?: number | string
   name?: string
   sequence?: number | string
+  best?: boolean
 }) {
-  const { getInscription, getInscriptionByHeight } = useInscriptionAPI()
+  const {
+    getInscription,
+    getBestInscription,
+    getInscriptionByHeight,
+    getBestInscriptionByHeight,
+  } = useInscriptionAPI()
 
   const getKey = useCallback(() => {
     if (!name && !height) return null
@@ -176,13 +224,17 @@ export function useInscription({
     getKey,
     ([keyPrefix, params]) =>
       keyPrefix == 'useInscriptions'
-        ? getInscriptionByHeight({ height: params })
+        ? best
+          ? getBestInscriptionByHeight({ height: params })
+          : getInscriptionByHeight({ height: params })
+        : best
+        ? getBestInscription(params)
         : getInscription(params),
     {}
   )
 
   return {
-    item: data?.result,
+    item: data?.result && { ...data.result, __best: best },
     error,
     isLoading,
     isValidating,
@@ -215,7 +267,8 @@ export function useBestInscriptions() {
 
   return {
     error,
-    items: (data?.result || []) as Inscription[],
+    items: (data?.result.map((ins) => ({ ...ins, __best: true })) ||
+      []) as Inscription[],
   } as const
 }
 

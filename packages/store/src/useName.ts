@@ -15,6 +15,7 @@ export interface NameState {
   key_kind: number
   public_keys: Uint8Array[]
   next_public_keys?: Uint8Array[]
+  __best?: boolean
 }
 
 export interface ServiceState {
@@ -56,6 +57,15 @@ export function useNameStateAPI() {
     [request]
   )
 
+  const getBestNameState = useCallback(
+    (params: { name: string }, signal?: AbortSignal) => {
+      return request
+        .get<{ result: NameState }>('/best/name', params, signal)
+        .catch(() => request.get<{ result: NameState }>(path, params, signal))
+    },
+    [request]
+  )
+
   const listNamesByQuery = useCallback(
     (params: { name: string }, signal?: AbortSignal) => {
       return request.get<{ result: string[] }>(
@@ -80,6 +90,7 @@ export function useNameStateAPI() {
 
   return {
     getNameState,
+    getBestNameState,
     listNamesByQuery,
     listNamesByPubkey,
   } as const
@@ -97,6 +108,17 @@ export function useServiceStateAPI() {
     [request]
   )
 
+  const getBestServiceState = useCallback(
+    (params: { name: string; code: number | string }, signal?: AbortSignal) => {
+      return request
+        .get<{ result: ServiceState }>('/best/service', params, signal)
+        .catch(() =>
+          request.get<{ result: ServiceState }>(servicePath, params, signal)
+        )
+    },
+    [request]
+  )
+
   const listServicesStateByName = useCallback(
     (params: { name: string }, signal?: AbortSignal) => {
       return request.get<{ result: ServiceState[] }>(
@@ -110,12 +132,13 @@ export function useServiceStateAPI() {
 
   return {
     getServiceState,
+    getBestServiceState,
     listServicesStateByName,
   } as const
 }
 
-export function useNameState(name: string) {
-  const { getNameState } = useNameStateAPI()
+export function useNameState(name: string, best = false) {
+  const { getNameState, getBestNameState } = useNameStateAPI()
 
   const getKey = useCallback(() => {
     if (!name) return null
@@ -124,12 +147,13 @@ export function useNameState(name: string) {
 
   const { data, error, isValidating, isLoading } = useSWR(
     getKey,
-    ([_keyPrefix, name]) => getNameState({ name }),
+    ([_keyPrefix, name]) =>
+      best ? getBestNameState({ name }) : getNameState({ name }),
     { revalidateOnFocus: true, focusThrottleInterval: 60 * 1000 }
   )
 
   return {
-    item: data?.result,
+    item: data?.result ?? ({ ...data?.result, __best: best } as NameState),
     error,
     isLoading,
     isValidating,

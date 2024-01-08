@@ -61,3 +61,5 @@ export {
   type NameState,
   type ServiceState,
 } from './useName'
+
+export { newEd25519 } from './wallet/ed25519'

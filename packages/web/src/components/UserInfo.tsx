@@ -75,7 +75,7 @@ export default function UserInfo({
           />
           <Button
             type='button'
-            size='medium'
+            size='large'
             color={'secondary'}
             variant='contained'
             onClick={handleLogout}

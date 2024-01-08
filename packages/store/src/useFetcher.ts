@@ -6,7 +6,7 @@ import {
 import { compact } from 'lodash-es'
 import { createContext, useContext, useMemo } from 'react'
 import { useAuth, xLanguage } from './AuthContext'
-import { decode, encode } from './CBOR'
+import { decode, encode, mapToObj } from './CBOR'
 import { useLogger, type Logger } from './logger'
 
 //#region fetcher config
@@ -76,7 +76,7 @@ export function createRequest(
     const { status } = resp
     const body =
       resp.headers.get('Content-Type') === CBOR_MIME_TYPE
-        ? decode(new Uint8Array(await resp.arrayBuffer()))
+        ? mapToObj(decode(new Uint8Array(await resp.arrayBuffer())))
         : resp.headers.get('Content-Type')?.startsWith(JSON_MIME_TYPE)
         ? await resp.json()
         : await resp.text()
@@ -89,6 +89,7 @@ export function createRequest(
       throw error
     }
   }
+
   request.defaultOptions = Object.freeze(defaultOptions)
   request.get = <T>(
     path: string,

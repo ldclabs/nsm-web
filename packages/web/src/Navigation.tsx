@@ -20,7 +20,7 @@ export const Navigation = memo(
         {...props}
         ref={ref}
         css={css`
-          height: 48px;
+          height: 60px;
           padding: 0 16px;
           display: flex;
           align-items: center;

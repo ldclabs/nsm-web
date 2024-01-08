@@ -214,6 +214,10 @@ function Layout() {
             max-width: 800px;
             margin: 0 auto;
             border-radius: 0;
+            @supports (height: 100dvh) {
+              height: 100dvh;
+              width: 100dvw;
+            }
           }
         `}
       >

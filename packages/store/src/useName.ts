@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import useSWR from 'swr'
-import { encode } from './CBOR'
+import { encode, mapToObj } from './CBOR'
 import { BytesToHex, type NameElement } from './common'
 import { useFetcher } from './useFetcher'
 
@@ -18,11 +18,45 @@ export interface NameState {
   __best?: boolean
 }
 
+export function nameStateFromRaw(vals: NameElement[]): NameState {
+  if (!Array.isArray(vals)) {
+    return mapToObj(vals) as NameState
+  }
+  const state: NameState = {
+    name: vals[0] as string,
+    sequence: vals[1] as number,
+    block_height: vals[2] as number,
+    block_time: vals[3] as number,
+    stale_time: vals[4] as number,
+    expire_time: vals[5] as number,
+    threshold: vals[6] as number,
+    key_kind: vals[7] as number,
+    public_keys: vals[8] as Uint8Array[],
+  }
+  if (vals.length == 10) {
+    state.next_public_keys = vals[9] as Uint8Array[]
+  }
+  return state
+}
+
 export interface ServiceState {
   name: string
-  sequence: number
   code: number
-  data: [number, NameElement][]
+  sequence: number
+  data: Map<number, NameElement>
+}
+
+export function serviceStateFromRaw(vals: NameElement[]): ServiceState {
+  if (!Array.isArray(vals)) {
+    return mapToObj(vals) as ServiceState
+  }
+  const state: ServiceState = {
+    name: vals[0] as string,
+    code: vals[1] as number,
+    sequence: vals[2] as number,
+    data: vals[3] as any as Map<number, NameElement>,
+  }
+  return state
 }
 
 export enum NameValidating {
@@ -37,9 +71,9 @@ export function diagServices(ss: ServiceState[]): string {
   for (const s of ss) {
     services += `- code: ${s.code}\n`
     services += `  values:\n`
-    for (const d of s.data) {
-      services += `  - subcode: ${d[0]}\n`
-      services += `    value: 0x${BytesToHex(encode(d[1]))}\n`
+    for (const [key, val] of s.data) {
+      services += `  - subcode: ${key}\n`
+      services += `    value: 0x${BytesToHex(encode(val))}\n`
     }
   }
   return services
@@ -52,7 +86,9 @@ export function useNameStateAPI() {
 
   const getNameState = useCallback(
     (params: { name: string }, signal?: AbortSignal) => {
-      return request.get<{ result: NameState }>(path, params, signal)
+      return request
+        .get<{ result: NameElement[] }>(path, params, signal)
+        .then((v) => nameStateFromRaw(v.result))
     },
     [request]
   )
@@ -60,30 +96,29 @@ export function useNameStateAPI() {
   const getBestNameState = useCallback(
     (params: { name: string }, signal?: AbortSignal) => {
       return request
-        .get<{ result: NameState }>('/best/name', params, signal)
-        .catch(() => request.get<{ result: NameState }>(path, params, signal))
+        .get<{ result: NameElement[] }>('/best/name', params, signal)
+        .catch(() =>
+          request.get<{ result: NameElement[] }>(path, params, signal)
+        )
+        .then((v) => nameStateFromRaw(v.result))
     },
     [request]
   )
 
   const listNamesByQuery = useCallback(
     (params: { name: string }, signal?: AbortSignal) => {
-      return request.get<{ result: string[] }>(
-        path + '/list_by_query',
-        params,
-        signal
-      )
+      return request
+        .get<{ result: string[] }>(path + '/list_by_query', params, signal)
+        .then((v) => v.result)
     },
     [request]
   )
 
   const listNamesByPubkey = useCallback(
     (params: { pubkey: string }, signal?: AbortSignal) => {
-      return request.get<{ result: string[] }>(
-        path + '/list_by_pubkey',
-        params,
-        signal
-      )
+      return request
+        .get<{ result: string[] }>(path + '/list_by_pubkey', params, signal)
+        .then((v) => v.result)
     },
     [request]
   )
@@ -103,7 +138,9 @@ export function useServiceStateAPI() {
 
   const getServiceState = useCallback(
     (params: { name: string; code: number | string }, signal?: AbortSignal) => {
-      return request.get<{ result: ServiceState }>(servicePath, params, signal)
+      return request
+        .get<{ result: NameElement[] }>(servicePath, params, signal)
+        .then((v) => serviceStateFromRaw(v.result))
     },
     [request]
   )
@@ -111,21 +148,24 @@ export function useServiceStateAPI() {
   const getBestServiceState = useCallback(
     (params: { name: string; code: number | string }, signal?: AbortSignal) => {
       return request
-        .get<{ result: ServiceState }>('/best/service', params, signal)
+        .get<{ result: NameElement[] }>('/best/service', params, signal)
         .catch(() =>
-          request.get<{ result: ServiceState }>(servicePath, params, signal)
+          request.get<{ result: NameElement[] }>(servicePath, params, signal)
         )
+        .then((v) => serviceStateFromRaw(v.result))
     },
     [request]
   )
 
   const listServicesStateByName = useCallback(
     (params: { name: string }, signal?: AbortSignal) => {
-      return request.get<{ result: ServiceState[] }>(
-        servicePath + '/list_by_name',
-        params,
-        signal
-      )
+      return request
+        .get<{ result: NameElement[][] }>(
+          servicePath + '/list_by_name',
+          params,
+          signal
+        )
+        .then((v) => v.result.map((r) => serviceStateFromRaw(r)))
     },
     [request]
   )
@@ -153,7 +193,7 @@ export function useNameState(name: string, best = false) {
   )
 
   return {
-    item: data?.result ?? ({ ...data?.result, __best: best } as NameState),
+    item: data && ({ ...data, __best: best } as NameState),
     error,
     isLoading,
     isValidating,
@@ -175,7 +215,7 @@ export function useNameServicesState(name: string) {
   )
 
   return {
-    items: data?.result || [],
+    items: data || [],
     error,
     isLoading,
     isValidating,
@@ -195,7 +235,7 @@ export function useNamesByQuery(name: string) {
     ([_keyPrefix, name]) => listNamesByQuery({ name }),
     { focusThrottleInterval: 5 * 60 * 1000 }
   )
-  const items = data?.result || []
+  const items = data || []
   const validating =
     name == ''
       ? NameValidating.Empty
@@ -229,7 +269,7 @@ export function useNamesByPubkey(pubkey: string) {
   )
 
   return {
-    items: data?.result || [],
+    items: data || [],
     error,
     isLoading,
     isValidating,

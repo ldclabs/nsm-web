@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import useSWR from 'swr'
 import useSWRInfinite from 'swr/infinite'
-import { encode } from './CBOR'
+import { encode, mapToObj } from './CBOR'
 import { BytesToHex, type NameElement } from './common'
 import { useFetcher } from './useFetcher'
 
@@ -17,16 +17,43 @@ export interface Inscription {
   sequence: number
   height: number
   name_height: number
-  block_height: number
   previous_hash: Uint8Array
   name_hash: Uint8Array
   service_hash: Uint8Array
   protocol_hash?: Uint8Array
+  block_height: number
   block_hash: Uint8Array
   txid: Uint8Array
   vin: number
   data: NameElement[]
   __best?: boolean
+}
+
+export function inscriptionFromRaw(vals: NameElement[]): Inscription {
+  if (!Array.isArray(vals)) {
+    return mapToObj(vals) as Inscription
+  }
+
+  const ins_state = vals[3] as NameElement[]
+  const tx_state = vals[4] as NameElement[]
+  const ins: Inscription = {
+    name: vals[0] as string,
+    sequence: vals[1] as number,
+    height: vals[2] as number,
+    name_height: ins_state[0] as number,
+    previous_hash: ins_state[1] as Uint8Array,
+    name_hash: ins_state[2] as Uint8Array,
+    service_hash: ins_state[3] as Uint8Array,
+    block_height: tx_state[0] as number,
+    block_hash: tx_state[1] as Uint8Array,
+    txid: tx_state[2] as Uint8Array,
+    vin: tx_state[3] as number,
+    data: vals[5] as NameElement[],
+  }
+  if (ins_state.length === 5) {
+    ins.protocol_hash = ins_state[4] as Uint8Array
+  }
+  return ins
 }
 
 export interface InvalidInscription {
@@ -69,7 +96,9 @@ export function useInscriptionAPI() {
       params: Record<keyof QueryInscription, string | undefined>,
       signal?: AbortSignal
     ) => {
-      return request.get<{ result: Inscription }>(path, params, signal)
+      return request
+        .get<{ result: NameElement[] }>(path, params, signal)
+        .then((v) => inscriptionFromRaw(v.result))
     },
     [request]
   )
@@ -80,8 +109,11 @@ export function useInscriptionAPI() {
       signal?: AbortSignal
     ) => {
       return request
-        .get<{ result: Inscription }>('/best/inscription', params, signal)
-        .catch(() => request.get<{ result: Inscription }>(path, params, signal))
+        .get<{ result: NameElement[] }>('/best/inscription', params, signal)
+        .catch(() =>
+          request.get<{ result: NameElement[] }>(path, params, signal)
+        )
+        .then((v) => inscriptionFromRaw(v.result))
     },
     [request]
   )
@@ -89,13 +121,14 @@ export function useInscriptionAPI() {
   const getLastAcceptedInscription = useCallback(
     (signal?: AbortSignal) => {
       return request
-        .get<{ result: Inscription }>(
+        .get<{ result: NameElement[] }>(
           path + '/get_last_accepted',
           undefined,
           signal
         )
-        .then((res) => {
-          last_accepted.height = res.result.height
+        .then((v) => {
+          const res = inscriptionFromRaw(v.result)
+          last_accepted.height = res.height
           return res
         })
     },
@@ -104,11 +137,9 @@ export function useInscriptionAPI() {
 
   const getInscriptionByHeight = useCallback(
     (params: { height: string | number }, signal?: AbortSignal) => {
-      return request.get<{ result: Inscription }>(
-        path + '/get_by_height',
-        params,
-        signal
-      )
+      return request
+        .get<{ result: NameElement[] }>(path + '/get_by_height', params, signal)
+        .then((v) => inscriptionFromRaw(v.result))
     },
     [request]
   )
@@ -116,62 +147,73 @@ export function useInscriptionAPI() {
   const getBestInscriptionByHeight = useCallback(
     (params: { height: string | number }, signal?: AbortSignal) => {
       return request
-        .get<{ result: Inscription }>(
+        .get<{ result: NameElement[] }>(
           '/best/inscription/get_by_height',
           params,
           signal
         )
         .catch(() =>
-          request.get<{ result: Inscription }>(
+          request.get<{ result: NameElement[] }>(
             path + '/get_by_height',
             params,
             signal
           )
         )
+        .then((v) => inscriptionFromRaw(v.result))
     },
     [request]
   )
 
   const listBestInscriptions = useCallback(
     (signal?: AbortSignal) => {
-      return request.get<{ result: Inscription[] }>(
-        '/best/inscription/list',
-        undefined,
-        signal
-      )
+      return request
+        .get<{ result: NameElement[] }>(
+          '/best/inscription/list',
+          undefined,
+          signal
+        )
+        .then((v) =>
+          v.result.map((r) => inscriptionFromRaw(r as NameElement[]))
+        )
     },
     [request]
   )
 
   const listInscriptionsByName = useCallback(
     (params: { name: string }, signal?: AbortSignal) => {
-      return request.get<{ result: Inscription[] }>(
-        path + '/list_by_name',
-        params,
-        signal
-      )
+      return request
+        .get<{ result: NameElement[] }>(path + '/list_by_name', params, signal)
+        .then((v) =>
+          v.result.map((r) => inscriptionFromRaw(r as NameElement[]))
+        )
     },
     [request]
   )
 
   const listInscriptionsByBlockHeight = useCallback(
     (params: { height: number }, signal?: AbortSignal) => {
-      return request.get<{ result: Inscription[] }>(
-        path + '/list_by_block_height',
-        params,
-        signal
-      )
+      return request
+        .get<{ result: NameElement[] }>(
+          path + '/list_by_block_height',
+          params,
+          signal
+        )
+        .then((v) =>
+          v.result.map((r) => inscriptionFromRaw(r as NameElement[]))
+        )
     },
     [request]
   )
 
   const listInvalidInscriptionsByName = useCallback(
     (params: { name: string }, signal?: AbortSignal) => {
-      return request.get<{ result: InvalidInscription[] }>(
-        '/v1/invalid_inscription/list_by_name',
-        params,
-        signal
-      )
+      return request
+        .get<{ result: NameElement[] }>(
+          '/v1/invalid_inscription/list_by_name',
+          params,
+          signal
+        )
+        .then((v) => v.result.map((r) => mapToObj(r) as InvalidInscription))
     },
     [request]
   )
@@ -234,7 +276,7 @@ export function useInscription({
   )
 
   return {
-    item: data?.result && { ...data.result, __best: best },
+    item: data && { ...data, __best: best },
     error,
     isLoading,
     isValidating,
@@ -252,7 +294,7 @@ export function useLastAcceptedInscription() {
 
   return {
     error,
-    item: data?.result,
+    item: data,
   } as const
 }
 
@@ -267,7 +309,7 @@ export function useBestInscriptions() {
 
   return {
     error,
-    items: (data?.result.map((ins) => ({ ...ins, __best: true })) ||
+    items: (data?.map((ins) => ({ ...ins, __best: true })) ||
       []) as Inscription[],
   } as const
 }
@@ -276,9 +318,9 @@ export function useInscriptions(last_accepted_height: number) {
   const { getInscriptionByHeight } = useInscriptionAPI()
 
   const getKey = useCallback(
-    (_: unknown, prevPage: { result: Inscription } | null) => {
-      const height = prevPage?.result?.height
-        ? prevPage.result.height - 1
+    (_: unknown, prevPage: Inscription | null) => {
+      const height = prevPage?.height
+        ? prevPage.height - 1
         : last_accepted_height - 1
 
       if (height < 1) return null
@@ -296,12 +338,12 @@ export function useInscriptions(last_accepted_height: number) {
 
   const items = useMemo(() => {
     if (!data) return []
-    return data.flatMap((page) => page.result)
+    return data.flatMap((page) => page)
   }, [data])
 
   const hasMore = useMemo(() => {
     if (!data || error) return false
-    const height = data[data.length - 1]?.result?.height
+    const height = data[data.length - 1]?.height
     return (height as number) > 1
   }, [data, error])
 
@@ -335,7 +377,7 @@ export function useInvalidInscriptions(name: string) {
   )
 
   return {
-    items: data?.result,
+    items: data,
     error,
     isLoading,
     isValidating,

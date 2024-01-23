@@ -26,3 +26,9 @@ jobs:
       - run: npx eslint --ext .ts,.tsx packages/**
       - run: pnpm --recursive --parallel test
       - run: pnpm --recursive --parallel run build
+      - name: deploy to testing environment
+        run: |
+          sudo -v ; curl https://gosspublic.alicdn.com/ossutil/install.sh | sudo bash
+          ossutil --version
+          pnpm --filter web run build --mode=testing --base=https://cdn.ns.top/dev/web
+          ossutil cp ./packages/web/dist/ oss://nsfs/dev/web/ -r -u -e ${{ secrets.ALIYUN_OSS_ENDPOINT }} -i ${{ secrets.ALIYUN_ACCESS_KEY_ID }} -k ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}

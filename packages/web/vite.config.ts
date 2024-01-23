@@ -1,12 +1,10 @@
 import svgr from '@svgr/rollup'
-import legacy from '@vitejs/plugin-legacy'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import { checker } from 'vite-plugin-checker'
 import { VitePWA } from 'vite-plugin-pwa'
 
 const buildEnv = process.env['npm_package_scripts_build'] || ''
-
 const scope =
   buildEnv.includes('testing') || !buildEnv.includes('--mode')
     ? 'http://127.0.0.1'
@@ -20,9 +18,21 @@ const cdnPrefix =
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  build: {
+    target: 'es2020',
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'es2020',
+    },
+  },
   plugins: [
-    react({ babel: { rootMode: 'upward', configFile: true } }),
-    legacy(),
+    react({
+      babel: {
+        rootMode: 'upward',
+        configFile: true,
+      },
+    }),
     checker({ typescript: true }),
     svgr({ ref: true, titleProp: true }),
     VitePWA({

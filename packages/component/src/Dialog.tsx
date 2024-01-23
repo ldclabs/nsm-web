@@ -5,7 +5,7 @@ import {
   type AnchorProps,
   type ModalProps,
   type ModalRef,
-} from '@ldclabs/util'
+} from '@nsm-web/util'
 import {
   createContext,
   forwardRef,

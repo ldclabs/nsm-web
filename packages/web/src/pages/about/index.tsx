@@ -1,6 +1,6 @@
 import { SetHeaderProps } from '#/App'
 import { css, useTheme } from '@emotion/react'
-import { Brand, Footer } from '@ldclabs/component'
+import { Brand, Footer } from '@nsm-web/component'
 import { useIntl } from 'react-intl'
 
 export default function AboutPage() {

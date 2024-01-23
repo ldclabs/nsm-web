@@ -2,11 +2,12 @@ import {
   joinURL,
   toURLSearchParams,
   type URLSearchParamsInit,
-} from '@ldclabs/util'
+} from '@nsm-web/util'
 import { compact } from 'lodash-es'
 import { createContext, useContext, useMemo } from 'react'
 import { useAuth, xLanguage } from './AuthContext'
-import { decode, encode, mapToObj } from './CBOR'
+import { mapToObj } from './CBOR'
+import { decodeCBOR, encodeCBOR } from './common'
 import { useLogger, type Logger } from './logger'
 
 //#region fetcher config
@@ -76,7 +77,7 @@ export function createRequest(
     const { status } = resp
     const body =
       resp.headers.get('Content-Type') === CBOR_MIME_TYPE
-        ? mapToObj(decode(new Uint8Array(await resp.arrayBuffer())))
+        ? mapToObj(decodeCBOR(new Uint8Array(await resp.arrayBuffer())))
         : resp.headers.get('Content-Type')?.startsWith(JSON_MIME_TYPE)
         ? await resp.json()
         : await resp.text()
@@ -108,7 +109,7 @@ export function createRequest(
   ) => {
     return request<T>(path, undefined, {
       method: RequestMethod.POST,
-      body: body ? encode(body) : null,
+      body: body ? encodeCBOR(body) : null,
       headers: { 'Content-Type': CBOR_MIME_TYPE },
       signal,
     })
@@ -120,7 +121,7 @@ export function createRequest(
   ) => {
     return request<T>(path, undefined, {
       method: RequestMethod.PUT,
-      body: body ? encode(body) : null,
+      body: body ? encodeCBOR(body) : null,
       headers: { 'Content-Type': CBOR_MIME_TYPE },
       signal,
     })
@@ -132,7 +133,7 @@ export function createRequest(
   ) => {
     return request<T>(path, undefined, {
       method: RequestMethod.PATCH,
-      body: body ? encode(body) : null,
+      body: body ? encodeCBOR(body) : null,
       headers: { 'Content-Type': CBOR_MIME_TYPE },
       signal,
     })
@@ -145,7 +146,7 @@ export function createRequest(
   ) => {
     return request<T>(path, params, {
       method: RequestMethod.DELETE,
-      body: body ? encode(body) : null,
+      body: body ? encodeCBOR(body) : null,
       headers: { 'Content-Type': CBOR_MIME_TYPE },
       signal,
     })

@@ -1,45 +1,8 @@
-import { ed25519 } from '@noble/curves/ed25519'
 import { hmac } from '@noble/hashes/hmac'
 import { sha512 } from '@noble/hashes/sha512'
-import { utf8ToBytes } from '@noble/hashes/utils'
 import { HARDENED_OFFSET } from './derivePath'
 
 const ED25519_CURVE = 'ed25519 seed'
-
-export function newEd25519(): Uint8Array {
-  return ed25519.utils.randomPrivateKey()
-}
-
-export function getPublicKey(privateKey: Uint8Array): Uint8Array {
-  return ed25519.getPublicKey(privateKey)
-}
-
-export function signData(privateKey: Uint8Array, data: Uint8Array): Uint8Array {
-  return ed25519.sign(data, privateKey)
-}
-
-export function verifyData(
-  publicKey: Uint8Array,
-  data: Uint8Array,
-  signature: Uint8Array
-): boolean {
-  return ed25519.verify(signature, data, publicKey)
-}
-
-export function signMessage(
-  privateKey: Uint8Array,
-  message: string
-): Uint8Array {
-  return signData(privateKey, utf8ToBytes(message))
-}
-
-export function verifyMessage(
-  publicKey: Uint8Array,
-  message: string,
-  signature: Uint8Array
-): boolean {
-  return verifyData(publicKey, utf8ToBytes(message), signature)
-}
 
 // SLIP-0010 https://github.com/satoshilabs/slips/blob/master/slip-0010.md
 export function deriveEd25519(

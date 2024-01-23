@@ -6,7 +6,7 @@ import {
   DialogClose,
   DialogHead,
   type DialogProps,
-} from '@ldclabs/component'
+} from '@nsm-web/component'
 
 interface MediumDialogProps extends DialogProps {
   title: string

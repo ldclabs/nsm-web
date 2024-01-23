@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
-import { Button } from '@ldclabs/component'
-import { useAuth } from '@ldclabs/store'
+import { Button } from '@nsm-web/component'
+import { useAuth } from '@nsm-web/store'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 

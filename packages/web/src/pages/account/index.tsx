@@ -1,8 +1,8 @@
 import { SetHeaderProps } from '#/App'
 import UserInfo from '#/components/UserInfo'
 import { css, useTheme } from '@emotion/react'
-import { Clickable, useToast } from '@ldclabs/component'
-import { useAuth } from '@ldclabs/store'
+import { Clickable, useToast } from '@nsm-web/component'
+import { useAuth } from '@nsm-web/store'
 import { useCallback, useState } from 'react'
 import { useIntl } from 'react-intl'
 

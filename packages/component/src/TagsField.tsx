@@ -1,5 +1,5 @@
 import { css, useTheme, type CSSObject } from '@emotion/react'
-import { preventDefaultStopPropagation } from '@ldclabs/util'
+import { preventDefaultStopPropagation } from '@nsm-web/util'
 import {
   forwardRef,
   memo,

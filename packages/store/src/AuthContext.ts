@@ -4,7 +4,7 @@ import {
   isWindow,
   useIsMounted,
   type ModalRef,
-} from '@ldclabs/util'
+} from '@nsm-web/util'
 import { client, utils } from '@passwordless-id/webauthn'
 import {
   createContext,
@@ -27,8 +27,8 @@ import {
   tap,
   type Subscription,
 } from 'rxjs'
-import { decode } from './CBOR'
-import { type UserInfo } from './common'
+import { mapToObj } from './CBOR'
+import { bytesToBase64Url, decodeCBOR, type UserInfo } from './common'
 import { useLogger } from './logger'
 import { authStore } from './store'
 import {
@@ -36,6 +36,7 @@ import {
   useFetcherConfig,
   type FetcherConfig,
 } from './useFetcher'
+import { KeyStore, type KEKRequest, type KEKResponse } from './wallet/store'
 
 interface AccessToken {
   sub: string
@@ -101,11 +102,24 @@ class AuthAPI {
   }
 
   fetchAccessToken(signal: AbortSignal | null) {
-    return this.request.get<AccessToken>('/access_token', undefined, signal)
+    return this.request
+      .get<AccessToken>('/access_token', undefined, signal)
+      .then((res) => {
+        const { sub, access_token, expires_in } = res
+        return {
+          sub: typeof sub === 'string' ? sub : bytesToBase64Url(sub),
+          access_token,
+          expires_in,
+        } as AccessToken
+      })
   }
 
   updateUserName(name: string, signal: AbortSignal | null) {
     return this.request.patch<UserInfo>('/userinfo', { name }, signal)
+  }
+
+  renewKEK(input: Partial<KEKRequest> = {}) {
+    return this.request.post<KEKResponse>('/cose/renew_kek', input)
   }
 
   private authentication = createAction<{ status: number }>('__AUTH_CALLBACK__')
@@ -148,7 +162,7 @@ class AuthAPI {
 
     const credential = (await navigator.credentials.create({
       publicKey: creationOptions,
-    })) as any
+    })) as PublicKeyCredential
 
     if (!credential) {
       throw new Error('Passkey (Webauthn) registration failed')
@@ -163,14 +177,17 @@ class AuthAPI {
       client_data: new Uint8Array(response.clientDataJSON),
     }
     if (registration.authenticator_data.length === 0) {
-      const obj = decode(new Uint8Array(response.attestationObject))
+      const obj = mapToObj(
+        decodeCBOR(new Uint8Array(response.attestationObject))
+      )
       registration.authenticator_data = new Uint8Array(obj.authData)
     }
 
-    const res = await this.request.post<any>(
-      '/passkey/verify_registration',
-      registration
-    )
+    const res = await this.request.post<{
+      idp: string
+      aud: string
+      sub: string
+    }>('/passkey/verify_registration', registration)
 
     const credentialUserEntities: CredentialUserEntity[] =
       (await authStore.getItem(CredentialUserEntitiesKey)) || []
@@ -213,14 +230,14 @@ class AuthAPI {
       timeout: 60000,
     }
 
-    const auth = await navigator.credentials.get({
+    const auth = (await navigator.credentials.get({
       publicKey: authOptions,
-    })
+    })) as PublicKeyCredential
     if (!auth) {
       throw new Error('Passkey (Webauthn) authentication failed')
     }
 
-    const response = (auth as any).response as AuthenticatorAssertionResponse
+    const response = auth.response as AuthenticatorAssertionResponse
 
     return {
       id: auth.id,
@@ -234,10 +251,11 @@ class AuthAPI {
   }
 
   private async passkeyVerifyAuthentication(authentication: Authentication) {
-    const res = await this.request.post<any>(
-      '/passkey/verify_authentication',
-      authentication
-    )
+    const res = await this.request.post<{
+      sub: Uint8Array
+      name: string
+      picture: string
+    }>('/passkey/verify_authentication', authentication)
     const credentialUserEntities: CredentialUserEntity[] =
       (await authStore.getItem(CredentialUserEntitiesKey)) || []
     if (
@@ -269,7 +287,7 @@ class AuthAPI {
           if (display_name) {
             const challenge = await this.passkeyGetChallenge()
             await this.passkeyRegister(display_name, challenge)
-            await new Promise((resolve) => setTimeout(resolve, 2000))
+            await new Promise((resolve) => setTimeout(resolve, 1000))
           }
 
           const challenge = await this.passkeyGetChallenge()
@@ -277,7 +295,7 @@ class AuthAPI {
           await this.passkeyVerifyAuthentication(authentication)
         }
 
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+        await new Promise((resolve) => setTimeout(resolve, 300))
         const user = await this.fetchUser(signal)
         observer.next(user)
         observer.complete()
@@ -309,9 +327,11 @@ interface State {
   isAuthorized: boolean
   language: string
   error: string
+  sub?: string | undefined // user's uuid in base64
   user?: UserInfo | undefined
   accessToken?: string | undefined
   refreshInterval?: number | undefined
+  keyStore?: KeyStore | undefined
   dialog: ModalRef
   authorize: (provider: IdentityProvider, display_name: string) => void
   authorizingProvider?: IdentityProvider | undefined
@@ -435,15 +455,22 @@ export function AuthProvider(
   const refresh = useCallback(
     async (authAPI: AuthAPI, signal: AbortSignal | null) => {
       try {
-        const [user, { access_token, expires_in }] = await Promise.all([
+        const [user, { sub, access_token, expires_in }] = await Promise.all([
           authAPI.fetchUser(signal),
           authAPI.fetchAccessToken(signal),
         ])
+        const keyStore = await new KeyStore().connect(sub)
+        ;(window as any).ks = keyStore // DEBUG
+        const kekState = await authAPI.renewKEK(await keyStore.loadKEKState())
+        await keyStore.open(kekState)
+
         isMounted() &&
           setState((state) => ({
             ...state,
             isAuthorized: true,
+            sub,
             user,
+            keyStore,
             error: '',
             accessToken: access_token,
             refreshInterval: expires_in,
@@ -453,7 +480,9 @@ export function AuthProvider(
           setState((state) => ({
             ...state,
             isAuthorized: false,
+            sub: undefined,
             user: undefined,
+            keyStore: undefined,
             accessToken: undefined,
             refreshInterval: undefined,
           }))
@@ -482,9 +511,10 @@ export function AuthProvider(
     const timer = window.setInterval(() => {
       authAPI
         .fetchAccessToken(controller.signal)
-        .then(({ access_token, expires_in }) => {
+        .then(({ sub, access_token, expires_in }) => {
           setState((state) => ({
             ...state,
+            sub,
             accessToken: access_token,
             refreshInterval: expires_in,
             error: '',
@@ -591,6 +621,7 @@ export function AuthProvider(
         .subscribe()
       subscriptionList.add(subscription)
     }
+
     setState((state) => ({
       ...state,
       authorize,

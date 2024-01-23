@@ -1,11 +1,11 @@
 import { css, useTheme } from '@emotion/react'
-import { textEllipsis } from '@ldclabs/component'
+import { textEllipsis } from '@nsm-web/component'
 import {
-  BytesToHex,
+  bytesToHex,
   diagServices,
   type NameState,
   type ServiceState,
-} from '@ldclabs/store'
+} from '@nsm-web/store'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 
@@ -126,7 +126,7 @@ export default function NameDetail({
           })}
         </label>
         {nameState.public_keys.map((key, i) => (
-          <p key={i}>{'0x' + BytesToHex(key)}</p>
+          <p key={i}>{'0x' + bytesToHex(key)}</p>
         ))}
       </div>
       <div>
@@ -143,7 +143,7 @@ export default function NameDetail({
             })}
           </label>
           {nameState.next_public_keys.map((key, i) => (
-            <p key={i}>{'0x' + BytesToHex(key)}</p>
+            <p key={i}>{'0x' + bytesToHex(key)}</p>
           ))}
         </div>
       )}

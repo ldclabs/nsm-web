@@ -1,5 +1,5 @@
 import { css, useTheme } from '@emotion/react'
-import { RequestError, toMessage } from '@ldclabs/store'
+import { RequestError, toMessage } from '@nsm-web/store'
 import { useMemo, type HTMLAttributes } from 'react'
 import { useIntl } from 'react-intl'
 

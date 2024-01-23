@@ -1,7 +1,7 @@
 export const HARDENED_OFFSET = 0x80000000
 
 export function derivePath(path: string): number[] {
-  if (!/^[mM]'?/.test(path)) {
+  if (!/^[mM]'?\/?/.test(path)) {
     throw new Error('path must start with "m" or "M"')
   }
   const p = path.replace(/^[mM]'?\/?/, '')

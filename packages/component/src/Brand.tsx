@@ -55,7 +55,8 @@ export const Brand = memo(
         </h2>
         <p>
           {intl.formatMessage({
-            defaultMessage: 'Inscribing Name service on Bitcoin network',
+            defaultMessage:
+              'Inscribing naming trusted database on Bitcoin network',
           })}
         </p>
       </div>

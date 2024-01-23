@@ -1,6 +1,6 @@
 import { css, useTheme } from '@emotion/react'
-import { Button, Icon, TextField } from '@ldclabs/component'
-import { useAuth } from '@ldclabs/store'
+import { Button, Icon, TextField } from '@nsm-web/component'
+import { useAuth } from '@nsm-web/store'
 import { useCallback, useState } from 'react'
 import { useIntl } from 'react-intl'
 import MediumDialog from './MediumDialog'

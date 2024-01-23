@@ -9,17 +9,17 @@ import {
   TextField,
   textEllipsis,
   useToast,
-} from '@ldclabs/component'
+} from '@nsm-web/component'
 import {
-  BytesToHex,
   NameValidating,
+  bytesToHex,
   useBestInscriptions,
   useInscriptions,
   useLastAcceptedInscription,
   useNamesByQuery,
   type Inscription,
-} from '@ldclabs/store'
-import { useScrollOnBottom } from '@ldclabs/util'
+} from '@nsm-web/store'
+import { useScrollOnBottom } from '@nsm-web/util'
 import {
   useCallback,
   useContext,
@@ -287,7 +287,7 @@ function InscriptionItem({
   onClick: (inscription: Inscription) => void
 }) {
   const theme = useTheme()
-  const tx = BytesToHex(Uint8Array.from(inscription.txid).reverse())
+  const tx = bytesToHex(Uint8Array.from(inscription.txid).reverse())
   return (
     <Clickable
       onClick={() => onClick(inscription)}

@@ -20,9 +20,18 @@ export {
 } from './CBOR'
 
 export {
-  BytesToBase64Url,
-  BytesToHex,
+  base64ToBytes,
+  bytesToBase64Url,
+  bytesToHex,
+  compareBytes,
+  concatBytes,
+  decodeCBOR,
+  encodeCBOR,
+  hexToBytes,
   isInWechat,
+  randomBytes,
+  toBytes,
+  utf8ToBytes,
   type UserInfo,
 } from './common'
 
@@ -61,5 +70,3 @@ export {
   type NameState,
   type ServiceState,
 } from './useName'
-
-export { newEd25519 } from './wallet/ed25519'

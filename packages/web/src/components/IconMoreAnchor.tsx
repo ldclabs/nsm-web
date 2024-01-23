@@ -1,5 +1,5 @@
-import { IconButton } from '@ldclabs/component'
-import { type AnchorProps } from '@ldclabs/util'
+import { IconButton } from '@nsm-web/component'
+import { type AnchorProps } from '@nsm-web/util'
 
 export function renderIconMoreAnchor(props: AnchorProps) {
   return (

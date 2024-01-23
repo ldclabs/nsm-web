@@ -1,6 +1,6 @@
 import { SetHeaderProps } from '#/App'
 import { css } from '@emotion/react'
-import { useToast } from '@ldclabs/component'
+import { useToast } from '@nsm-web/component'
 
 export default function Market() {
   const { renderToastContainer } = useToast()

@@ -57,7 +57,7 @@ module.exports = {
           {
             'name': 'react',
             'importNames': ['useLayoutEffect'],
-            'message': "Please import from '@ldclabs/util' instead.",
+            'message': "Please import from '@nsm-web/util' instead.",
           },
         ],
       },

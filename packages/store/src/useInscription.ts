@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react'
 import useSWR from 'swr'
 import useSWRInfinite from 'swr/infinite'
 import { encode, mapToObj } from './CBOR'
-import { BytesToHex, type NameElement } from './common'
+import { bytesToHex, type NameElement } from './common'
 import { useFetcher } from './useFetcher'
 
 const last_accepted = { height: 0 }
@@ -74,14 +74,14 @@ export function diagName(val: Array<NameElement>): string {
   name += `  operations:\n`
   for (const op of srvArr[1] as Array<Array<NameElement>>) {
     name += `  - subcode: ${op[0]}\n`
-    name += `    params: 0x${BytesToHex(encode(op[1]))}\n`
+    name += `    params: 0x${bytesToHex(encode(op[1]))}\n`
   }
   if (srvArr[2]) {
-    name += `  approver: ${srvArr[2]}\n`
+    name += `  approver: ${(srvArr[2] as Array<string>).join(', ')}\n`
   }
   name += `signatures:\n`
   for (const sig of sigArr) {
-    name += `- 0x${BytesToHex(sig)}\n`
+    name += `- 0x${bytesToHex(sig)}\n`
   }
   return name
 }

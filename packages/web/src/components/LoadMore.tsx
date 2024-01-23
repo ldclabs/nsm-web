@@ -1,5 +1,5 @@
 import { css, useTheme } from '@emotion/react'
-import { Button, Spinner } from '@ldclabs/component'
+import { Button, Spinner } from '@nsm-web/component'
 import { useIntl } from 'react-intl'
 
 interface LoadMoreProps extends React.HTMLAttributes<HTMLDivElement> {

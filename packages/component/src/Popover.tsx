@@ -15,7 +15,7 @@ import {
   type AnchorProps,
   type ModalProps,
   type ModalRef,
-} from '@ldclabs/util'
+} from '@nsm-web/util'
 import { omit, pick } from 'lodash-es'
 import {
   forwardRef,

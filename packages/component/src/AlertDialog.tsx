@@ -1,5 +1,5 @@
 import { css } from '@emotion/react'
-import { type ModalRef } from '@ldclabs/util'
+import { type ModalRef } from '@nsm-web/util'
 import { forwardRef, memo, type HTMLAttributes } from 'react'
 import {
   Dialog,

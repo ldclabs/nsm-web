@@ -49,13 +49,13 @@ export default defineConfig({
       includeManifestIcons: true,
       manifest: {
         'name': 'NS Top',
-        'short_name': 'NS',
+        'short_name': 'NS Top',
         'start_url': scope,
         'display': 'standalone',
         'theme_color': '#FF9F40',
         'background_color': '#002FA7',
         'description':
-          'NS.Top — Inscribing Name service on Bitcoin network (Implementation of NS-Protocol).',
+          'NS.Top — Inscribing naming trusted database on Bitcoin network (Implementation of NS-Protocol).',
         'icons': [
           {
             'src': cdnPrefix + 'android-chrome-192x192.png',

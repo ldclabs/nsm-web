@@ -6,14 +6,14 @@ import {
   Header,
   lightTheme,
   type HeaderProps,
-} from '@ldclabs/component'
+} from '@nsm-web/component'
 import {
   AuthProvider,
   FetcherConfigProvider,
   authorized,
   useAuth,
   type FetcherConfig,
-} from '@ldclabs/store'
+} from '@nsm-web/store'
 import {
   LoggerProvider,
   LoggingLevel,
@@ -21,7 +21,7 @@ import {
   useIsMounted,
   useLayoutEffect,
   type LoggingHandler,
-} from '@ldclabs/util'
+} from '@nsm-web/util'
 import {
   createContext,
   useCallback,

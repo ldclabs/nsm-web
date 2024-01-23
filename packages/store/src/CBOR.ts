@@ -1,4 +1,4 @@
-import { isBlobURL } from '@ldclabs/util'
+import { isBlobURL } from '@nsm-web/util'
 // missing types
 import { decode as _decode, encode as _encode } from 'cborg' // eslint-disable-line import/order
 

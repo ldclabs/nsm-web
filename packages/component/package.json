@@ -1,5 +1,5 @@
 {
-  "name": "@ldclabs/component",
+  "name": "@nsm-web/component",
   "version": "0.0.0-development",
   "type": "module",
   "exports": {
@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@floating-ui/react-dom": "^2.0.4",
-    "@ldclabs/store": "workspace:*",
-    "@ldclabs/util": "workspace:*",
+    "@nsm-web/store": "workspace:*",
+    "@nsm-web/util": "workspace:*",
     "lodash-es": "^4.17.21",
     "lowlight": "^3.1.0",
     "nanoid": "^4.0.2",

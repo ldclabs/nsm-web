@@ -1,3 +1,16 @@
+export {
+  base64ToBytes,
+  bytesToBase64Url,
+  bytesToHex,
+  compareBytes,
+  concatBytes,
+  decodeCBOR,
+  encodeCBOR,
+  hexToBytes,
+  randomBytes,
+  toBytes,
+  utf8ToBytes,
+} from '@ldclabs/cose-ts/utils'
 export interface QueryPagination {
   page_token?: string
   page_size?: number
@@ -22,14 +35,3 @@ export type NameElement = string | number | Uint8Array | Array<NameElement>
 export function isInWechat() {
   return window.navigator.userAgent.toLowerCase().includes('micromessenger/')
 }
-
-export const BytesToBase64Url = (bytes: Uint8Array) =>
-  btoa(String.fromCodePoint(...bytes))
-    .replaceAll('+', '-')
-    .replaceAll('/', '_')
-    .replaceAll('=', '')
-
-export const BytesToHex = (bytes: Uint8Array) =>
-  Array.from(bytes)
-    .map((i) => i.toString(16).padStart(2, '0'))
-    .join('')

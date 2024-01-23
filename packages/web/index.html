@@ -1,48 +1,54 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/logo.svg" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
-  <meta name="apple-mobile-web-app-title" content="NS.Top" />
-  <meta name="application-name" content="NS.Top" />
-  <meta name="msapplication-TileColor" content="#da532c" />
-  <meta name="theme-color" content="#ffffff" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NS.Top</title>
-  <meta name="description"
-    content="NS.Top — Inscribing Name service on Bitcoin network (Implementation of NS-Protocol)" />
-  <meta property="og:title" content="NS.Top" />
-  <meta property="og:description"
-    content="NS.Top — Inscribing Name service on Bitcoin network (Implementation of NS-Protocol)" />
-  <meta property="og:url" content="https://www.ns.top/" />
-  <meta property="og:site_name" content="NS.Top" />
-  <meta property="og:type" content="website" />
-  <style>
-    body {
-      background: url('/universe.webp') rgb(0, 47, 167) center top repeat fixed;
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+    <meta name="apple-mobile-web-app-title" content="NS.Top" />
+    <meta name="application-name" content="NS.Top" />
+    <meta name="msapplication-TileColor" content="#da532c" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NS.Top</title>
+    <meta
+      name="description"
+      content="NS.Top — Inscribing naming trusted database on Bitcoin network (Implementation of NS-Protocol)"
+    />
+    <meta property="og:title" content="NS.Top" />
+    <meta
+      property="og:description"
+      content="NS.Top — Inscribing naming trusted database on Bitcoin network (Implementation of NS-Protocol)"
+    />
+    <meta property="og:url" content="https://www.ns.top/" />
+    <meta property="og:site_name" content="NS.Top" />
+    <meta property="og:type" content="website" />
+    <style>
+      body {
+        background: url('/universe.webp') rgb(0, 47, 167) center top repeat
+          fixed;
+      }
+    </style>
+  </head>
+  <!-- Google tag (gtag.js) -->
+  <script
+    async
+    src="https://www.googletagmanager.com/gtag/js?id=G-6192KPEWX0"
+  ></script>
+  <script>
+    window.dataLayer = window.dataLayer || []
+    function gtag() {
+      dataLayer.push(arguments)
     }
-  </style>
-</head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-6192KPEWX0"></script>
-<script>
-  window.dataLayer = window.dataLayer || []
-  function gtag() {
-    dataLayer.push(arguments)
-  }
-  gtag('js', new Date())
+    gtag('js', new Date())
 
-  gtag('config', 'G-6192KPEWX0')
-</script>
+    gtag('config', 'G-6192KPEWX0')
+  </script>
 
-<body>
-  <div id="root"></div>
-  <script type="module" src="./src/main.tsx"></script>
-</body>
-
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./src/main.tsx"></script>
+  </body>
 </html>

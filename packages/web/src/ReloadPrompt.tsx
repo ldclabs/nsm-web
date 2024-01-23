@@ -1,5 +1,5 @@
 import { css, useTheme } from '@emotion/react'
-import { Button } from '@ldclabs/component'
+import { Button } from '@nsm-web/component'
 import { useCallback } from 'react'
 import { useIntl } from 'react-intl'
 import { useRegisterSW } from 'virtual:pwa-register/react'

@@ -9,7 +9,7 @@ import {
   useRefCallback,
   type AnchorProps,
   type ModalRef,
-} from '@ldclabs/util'
+} from '@nsm-web/util'
 import {
   createContext,
   forwardRef,

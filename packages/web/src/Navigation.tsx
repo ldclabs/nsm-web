@@ -1,5 +1,5 @@
 import { css, useTheme } from '@emotion/react'
-import { AccountManager, type MenuProps } from '@ldclabs/component'
+import { AccountManager, type MenuProps } from '@nsm-web/component'
 import { forwardRef, memo, type HTMLAttributes } from 'react'
 import { NavLink } from 'react-router-dom'
 

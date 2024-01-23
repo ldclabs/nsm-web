@@ -1,5 +1,5 @@
 import { css } from '@emotion/react'
-import { Spinner } from '@ldclabs/component'
+import { Spinner } from '@nsm-web/component'
 
 export default function Loading(props: React.HTMLAttributes<HTMLDivElement>) {
   return (

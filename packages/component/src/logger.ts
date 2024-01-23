@@ -1,4 +1,4 @@
-import { createUseLogger } from '@ldclabs/util'
+import { createUseLogger } from '@nsm-web/util'
 
 export const useLogger = createUseLogger<{
   'accessibility': string

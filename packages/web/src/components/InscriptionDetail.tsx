@@ -1,6 +1,6 @@
 import { css, useTheme } from '@emotion/react'
-import { textEllipsis } from '@ldclabs/component'
-import { BytesToHex, diagName, type Inscription } from '@ldclabs/store'
+import { textEllipsis } from '@nsm-web/component'
+import { bytesToHex, diagName, type Inscription } from '@nsm-web/store'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 
@@ -10,8 +10,8 @@ export default function InscriptionDetail({
 }: { inscription: Inscription } & React.HTMLAttributes<HTMLElement>) {
   const intl = useIntl()
   const theme = useTheme()
-  const tx = BytesToHex(Uint8Array.from(inscription.txid).reverse())
-  const block = BytesToHex(Uint8Array.from(inscription.block_hash).reverse())
+  const tx = bytesToHex(Uint8Array.from(inscription.txid).reverse())
+  const block = bytesToHex(Uint8Array.from(inscription.block_hash).reverse())
   return (
     <div
       css={css`
@@ -134,19 +134,19 @@ export default function InscriptionDetail({
             defaultMessage: 'Previous inscription hash:',
           })}
         </label>
-        <p>{BytesToHex(inscription.previous_hash)}</p>
+        <p>{bytesToHex(inscription.previous_hash)}</p>
       </div>
       <div>
         <label>
           {intl.formatMessage({ defaultMessage: 'Name state hash:' })}
         </label>
-        <p>{BytesToHex(inscription.name_hash)}</p>
+        <p>{bytesToHex(inscription.name_hash)}</p>
       </div>
       <div>
         <label>
           {intl.formatMessage({ defaultMessage: 'Service state hash:' })}
         </label>
-        <p>{BytesToHex(inscription.service_hash)}</p>
+        <p>{bytesToHex(inscription.service_hash)}</p>
       </div>
       <div>
         <label>

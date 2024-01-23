@@ -5,8 +5,8 @@ import {
   DialogClose,
   DialogHead,
   type DialogProps,
-} from '@ldclabs/component'
-import { stopPropagation } from '@ldclabs/util'
+} from '@nsm-web/component'
+import { stopPropagation } from '@nsm-web/util'
 
 interface SmallDialogProps extends DialogProps {
   title: string

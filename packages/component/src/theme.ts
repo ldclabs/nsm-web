@@ -1,5 +1,5 @@
 import { type CSSObject, type Theme } from '@emotion/react'
-import { RGBA } from '@ldclabs/util'
+import { RGBA } from '@nsm-web/util'
 
 interface Typography
   extends Required<Pick<CSSObject, 'fontSize' | 'fontWeight' | 'lineHeight'>> {}

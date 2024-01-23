@@ -4,8 +4,8 @@ import {
   passKeyIsExist,
   useAuth,
   type IdentityProvider,
-} from '@ldclabs/store'
-import { stopPropagation } from '@ldclabs/util'
+} from '@nsm-web/store'
+import { stopPropagation } from '@nsm-web/util'
 import { memo, useCallback, useEffect, useState } from 'react'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Icon, type IconName } from '.'

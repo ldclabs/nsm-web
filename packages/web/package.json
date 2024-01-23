@@ -1,5 +1,5 @@
 {
-  "name": "@ldclabs/web",
+  "name": "@nsm-web/web",
   "version": "0.0.0-development",
   "type": "module",
   "imports": {
@@ -16,9 +16,9 @@
   "devDependencies": {
     "@emotion/react": "^11.11.3",
     "@formatjs/cli": "^6.2.4",
-    "@ldclabs/component": "workspace:*",
-    "@ldclabs/store": "workspace:*",
-    "@ldclabs/util": "workspace:*",
+    "@nsm-web/component": "workspace:*",
+    "@nsm-web/store": "workspace:*",
+    "@nsm-web/util": "workspace:*",
     "@svgr/rollup": "^8.1.0",
     "@tanstack/react-table": "^8.11.2",
     "@types/lodash-es": "^4.17.12",

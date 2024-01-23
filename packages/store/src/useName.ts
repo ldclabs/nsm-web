@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import useSWR from 'swr'
 import { encode, mapToObj } from './CBOR'
-import { BytesToHex, type NameElement } from './common'
+import { bytesToHex, type NameElement } from './common'
 import { useFetcher } from './useFetcher'
 
 export interface NameState {
@@ -73,7 +73,7 @@ export function diagServices(ss: ServiceState[]): string {
     services += `  values:\n`
     for (const [key, val] of s.data) {
       services += `  - subcode: ${key}\n`
-      services += `    value: 0x${BytesToHex(encode(val))}\n`
+      services += `    value: 0x${bytesToHex(encode(val))}\n`
     }
   }
   return services

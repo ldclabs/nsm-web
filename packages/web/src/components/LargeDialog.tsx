@@ -1,6 +1,6 @@
 import { BREAKPOINT } from '#/shared'
 import { css, useTheme } from '@emotion/react'
-import { Dialog, DialogBody, type DialogProps } from '@ldclabs/component'
+import { Dialog, DialogBody, type DialogProps } from '@nsm-web/component'
 import { createContext, useCallback, useRef, useState } from 'react'
 
 interface LargeDialogProps extends DialogProps {}

@@ -1,6 +1,7 @@
 import svgr from '@svgr/rollup'
+// import legacy from '@vitejs/plugin-legacy'
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import { defineConfig, type PluginOption } from 'vite'
 import { checker } from 'vite-plugin-checker'
 import { VitePWA } from 'vite-plugin-pwa'
 
@@ -33,8 +34,12 @@ export default defineConfig({
         configFile: true,
       },
     }),
+    // legacy({
+    //   targets: ['defaults and fully supports es6-module'],
+    //   modernPolyfills: true,
+    // }),
     checker({ typescript: true }),
-    svgr({ ref: true, titleProp: true }),
+    svgr({ ref: true, titleProp: true }) as unknown as PluginOption,
     VitePWA({
       scope,
       buildBase: cdnPrefix,

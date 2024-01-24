@@ -5,6 +5,16 @@
       "#/*": ["./src/*", "./src/*.ts", "./src/*.tsx"]
     },
     "types": ["vite-plugin-pwa/client", "vite-plugin-pwa/react"],
-    "lib": ["ESNext", "DOM", "DOM.Iterable", "WebWorker"]
+    "lib": [
+      "ES2020",
+      "ES2022",
+      "ES2022.Intl",
+      "ESNext",
+      "DOM",
+      "DOM.Iterable",
+      "WebWorker"
+    ],
+    "module": "ES2020",
+    "target": "ES2020"
   }
 }

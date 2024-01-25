@@ -23,15 +23,15 @@
     "idb": "^8.0.0",
     "lodash-es": "^4.17.21",
     "rxjs": "^7.8.1",
-    "swr": "2.2.0",
-    "xid-ts": "1.1.0"
+    "swr": "^2.2.0",
+    "xid-ts": "^1.1.0"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.12",
     "@types/react": "^18.2.48",
     "micromark-util-classify-character": "^2.0.0",
     "react": "^18.2.0",
-    "type-fest": "^4.10.0",
+    "type-fest": "^4.10.1",
     "vitest": "^0.33.0"
   },
   "peerDependencies": {
